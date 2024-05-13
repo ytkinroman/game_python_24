@@ -1,72 +1,81 @@
 import sys
-import pygame
+import pygame as pg
 
 # Game:
 GAME_FPS_MAX = 60
 
 # Screen:
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
+SCREEN_WIDTH, SCREEN_HEIGHT = 1024, 768
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-
-SCREEN_TITLE = "Template PyGame 0.1"
+SCREEN_TITLE = "PyGame | PyGame PyGame | Name Name Name Name Name Name"
+SCREEN_ICON = "images/screen_game_logo.png"
 
 # Colors:
 COLOR_RED = (255, 0, 0)
 COLOR_GREEN = (0, 255, 0)
 COLOR_BLUE = (0, 0, 255)
+COLOR_YELLOW = (255, 255, 0)
+COLOR_BLACK = (0, 0, 0)
+COLOR_WHITE = (255, 255, 255)
+COLOR_GRAY = (192, 192, 192)
 
 
 class Game:
-    def __init__(self):
-        self.is_paused = False
-        self.game_speed = 1.0
-        self.delta_time = 0.016
+    def __init__(self, fps: int) -> None:
+        self._is_paused = False
+        self._fps = fps
+        self._game_speed = 1.0
+        self._delta_time = round(1 / self._fps, 3)
 
-    def toggle_pause(self):
-        self.is_paused = not self.is_paused
+    def toggle_pause(self) -> None:
+        self._is_paused = not self._is_paused
 
-    def set_game_speed(self, speed):
-        self.game_speed = speed
+    def is_game_paused(self) -> bool:
+        return self._is_paused
 
-    def update(self):
-        if not self.is_paused:
-            scaled_delta_time = self.delta_time * self.game_speed
-            self.update_game_world(scaled_delta_time)
+    def set_game_speed(self, speed) -> None:
+        self._game_speed = speed
+
+    def update(self) -> None:
+        if not self._is_paused:
+            scaled_delta_time = self._delta_time * self._game_speed
+            self._update_game_world(scaled_delta_time)
         else:
-            self.update_paused_state()
+            self._update_paused_state()
 
-    def update_game_world(self, scaled_delta_time):
+    def _update_game_world(self, scaled_delta_time: float) -> None:
+        # print("GAMEPLAY")
         pass
 
-    def update_paused_state(self):
+    def _update_paused_state(self) -> None:
+        # print("PAUSE")
         pass
 
 
 if __name__ == "__main__":
-    pygame.init()
+    pg.init()
 
-    screen = pygame.display.set_mode(SCREEN_SIZE)
-    pygame.display.set_caption(SCREEN_TITLE)
+    screen = pg.display.set_mode(SCREEN_SIZE)
+    pg.display.set_caption(SCREEN_TITLE)
 
-    clock = pygame.time.Clock()
-    game = Game()
+    clock = pg.time.Clock()
+    game = Game(GAME_FPS_MAX)
 
     running = True
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:  # PAUSE
                     game.toggle_pause()
 
         screen.fill(COLOR_GREEN)  # BACKGROUND
 
         game.update()
 
-        pygame.display.flip()
-        clock.tick(60)
+        pg.display.flip()
+        clock.tick(GAME_FPS_MAX)
 
-    pygame.quit()
+    pg.quit()
     sys.exit()
