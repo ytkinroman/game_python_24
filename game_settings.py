@@ -9,3 +9,5 @@ class GameSettings:
 
     # Game:
     game_fps_max = 60
+    game_base_font = "fonts/thin_pixel-7.ttf"
+    game_base_font_size = 40
