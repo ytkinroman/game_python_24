@@ -2,7 +2,7 @@ import sys
 import pygame as pg
 from colors import Colors
 from game_settings import GameSettings
-
+from simple_ui import UI, Text
 
 class Scene:
     """Базовый класс для всех сцен в игре."""
@@ -61,10 +61,33 @@ class MainMenuScene(Scene):
     def __init__(self, game: Game) -> None:
         super().__init__()
         self._game = game
-        self._background = colors.color_blue
+        self._menu_ui = UI()
+
+        self._background = colors.color_white
+
+        self._welcome_text_title = "Добро пожаловать в игру!"
+        self._welcome_text_color = colors.color_black
+        self._welcome_text_size = 65
+        self._welcome_text_position_x = game_settings.screen_width / 2
+        self._welcome_text_position_y = game_settings.screen_height / 2
+        self._welcome_text_position = (self._welcome_text_position_x, self._welcome_text_position_y)
+        self._welcome_text = Text(self._welcome_text_title, self._welcome_text_size, self._welcome_text_color, self._welcome_text_position)
+        self._menu_ui.add_element(self._welcome_text)
+
+        self._supporting_text_title = "Чтобы начать игру нажмите Enter..."
+        self._supporting_text_color = colors.color_gray
+        self._supporting_text_size = 50
+        self._supporting_text_position_x = game_settings.screen_width / 2
+        self._supporting_text_position_y = (8 * game_settings.screen_height / 9)
+        self._supporting_text_position = (self._supporting_text_position_x, self._supporting_text_position_y)
+        self._supporting_text = Text(self._supporting_text_title, self._supporting_text_size, self._supporting_text_color, self._supporting_text_position)
+
+        self._menu_ui.add_element(self._welcome_text)
+        self._menu_ui.add_element(self._supporting_text)
 
     def render(self, screen: pg.Surface) -> None:
         screen.fill(self._background)
+        self._menu_ui.draw(screen)
 
     def handle_events(self, event: pg.event.Event) -> None:
         if event.type == pg.KEYDOWN:
