@@ -3,24 +3,8 @@ import pygame as pg
 from colors import Colors
 from game_settings import GameSettings
 from simple_ui import UI, Text
-
-class Scene:
-    """Базовый класс для всех сцен в игре."""
-    def __init__(self) -> None:
-        """Инициализация сцены."""
-        pass
-
-    def handle_events(self, events: list[pg.event.Event]) -> None:
-        """Обработка нажатий."""
-        pass
-
-    def update(self, delta_time: float) -> None:
-        """Обновление состояния сцены."""
-        pass
-
-    def render(self, screen: pg.Surface) -> None:
-        """Рендеринг сцены на экран."""
-        pass
+from scene import Scene
+from story import StoryText
 
 
 class Game:
@@ -61,33 +45,32 @@ class MainMenuScene(Scene):
     def __init__(self, game: Game) -> None:
         super().__init__()
         self._game = game
-        self._menu_ui = UI()
+        self._menu_scene__ui = UI()
 
         self._background = colors.color_white
 
         self._welcome_text_title = "Добро пожаловать в игру!"
         self._welcome_text_color = colors.color_black
-        self._welcome_text_size = 65
+        self._welcome_text_size = 70
         self._welcome_text_position_x = game_settings.screen_width / 2
         self._welcome_text_position_y = game_settings.screen_height / 2
         self._welcome_text_position = (self._welcome_text_position_x, self._welcome_text_position_y)
         self._welcome_text = Text(self._welcome_text_title, self._welcome_text_size, self._welcome_text_color, self._welcome_text_position)
-        self._menu_ui.add_element(self._welcome_text)
 
         self._supporting_text_title = "Чтобы начать игру нажмите Enter..."
         self._supporting_text_color = colors.color_gray
-        self._supporting_text_size = 50
+        self._supporting_text_size = 45
         self._supporting_text_position_x = game_settings.screen_width / 2
-        self._supporting_text_position_y = (8 * game_settings.screen_height / 9)
+        self._supporting_text_position_y = (game_settings.screen_height - (game_settings.screen_height * 0.05))
         self._supporting_text_position = (self._supporting_text_position_x, self._supporting_text_position_y)
         self._supporting_text = Text(self._supporting_text_title, self._supporting_text_size, self._supporting_text_color, self._supporting_text_position)
 
-        self._menu_ui.add_element(self._welcome_text)
-        self._menu_ui.add_element(self._supporting_text)
+        self._menu_scene__ui.add_element(self._welcome_text)
+        self._menu_scene__ui.add_element(self._supporting_text)
 
     def render(self, screen: pg.Surface) -> None:
         screen.fill(self._background)
-        self._menu_ui.draw(screen)
+        self._menu_scene__ui.draw(screen)
 
     def handle_events(self, event: pg.event.Event) -> None:
         if event.type == pg.KEYDOWN:
@@ -99,15 +82,64 @@ class StoryScene(Scene):
     def __init__(self, game: Game) -> None:
         super().__init__()
         self._game = game
-        self._background = colors.color_yellow
+        self._story_scene_ui = UI()
+
+        self._background = colors.color_white
+
+        self._welcome_text_title = "* Режим истории *"
+        self._welcome_text_color = colors.color_gray
+        self._welcome_text_size = 60
+        self._welcome_text_position_x = game_settings.screen_width / 2
+        self._welcome_text_position_y = game_settings.screen_height * 0.05
+        self._welcome_text_position = (self._welcome_text_position_x, self._welcome_text_position_y)
+        self._welcome_text = Text(self._welcome_text_title, self._welcome_text_size, self._welcome_text_color, self._welcome_text_position)
+
+        self._supporting_text_title = "Продолжить повествование нажмите Enter..."
+        self._supporting_text_title_story_ending = "История закончилась. Нажмите Enter, чтобы начать играть..."
+        self._supporting_text_color = colors.color_gray
+        self._supporting_text_size = 50
+        self._supporting_text_position_x = game_settings.screen_width / 2
+        self._supporting_text_position_y = (game_settings.screen_height - (game_settings.screen_height * 0.05))
+        self._supporting_text_position = (self._supporting_text_position_x, self._supporting_text_position_y)
+        self._supporting_text = Text(self._supporting_text_title, self._supporting_text_size, self._supporting_text_color, self._supporting_text_position)
+
+        self._story_texts = StoryText(["Эта история о противостоянии добра и зла.",
+                              "Вы - величайший маг, обитатель мирной деревни \"Гринвич\".",
+                              "Всё случилось во время праздника костюмов...",
+                              "На вашу деревню напал злодей - некому ранее неизвестный колдун.",
+                              "Он призвал духов стихий, чтобы уничтожить ваш любимый дом.",
+                              "В панике вы бросились бежать со всех ног...",
+                              "Оставив позади всех и всё, что у вас было.",
+                              "Даже не успели снять праздничный костюм...",
+                              "...",
+                              "Кажется, вы попали в засаду..."])
+
+        self._story_text_title = self._story_texts.get_current_text()
+        self._story_text_color = colors.color_black
+        self._story_text_size = 55
+        self._story_text_position_x = game_settings.screen_width / 2
+        self._story_text_position_y = game_settings.screen_height / 2
+        self._story_text_position = (self._story_text_position_x, self._story_text_position_y)
+        self._story_text = Text(self._story_text_title, self._story_text_size, self._story_text_color, self._story_text_position)
+
+        self._story_scene_ui.add_element(self._welcome_text)
+        self._story_scene_ui.add_element(self._story_text)
+        self._story_scene_ui.add_element(self._supporting_text)
 
     def render(self, screen: pg.Surface) -> None:
         screen.fill(self._background)
+        self._story_scene_ui.draw(screen)
 
     def handle_events(self, event: pg.event.Event) -> None:
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_RETURN:
-                self._game.change_scene(GameScene(self._game))
+                if self._story_texts.is_next_text():
+                    self._story_texts.next_text()
+                    self._story_text.set_text(self._story_texts.get_current_text())
+                    if self._story_texts.get_current_index() == self._story_texts.get_texts_length() - 1:
+                        self._supporting_text.set_text(self._supporting_text_title_story_ending)
+                else:
+                    self._game.change_scene(GameScene(self._game))
 
 
 class GameScene(Scene):
