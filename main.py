@@ -41,17 +41,8 @@ class Game:
         self._game_speed = speed
 
     def update(self) -> None:
-        if not self._is_paused:
-            scaled_delta_time = self._delta_time * self._game_speed
-            self._update_game_world(scaled_delta_time)
-        else:
-            self._update_paused_state()
-
-    def _update_game_world(self, scaled_delta_time: float) -> None:
+        scaled_delta_time = self._delta_time * self._game_speed
         self._scene.update(scaled_delta_time)
-
-    def _update_paused_state(self) -> None:
-        pass
 
     def render(self, screen: pg.Surface) -> None:
         """Отрисовка действующей сцены."""
@@ -62,7 +53,7 @@ class Game:
         self._scene.handle_events(event)
 
     def change_scene(self, scene: Scene):
-        """Изменить действующую сцену."""
+        """Поменять действующую сцену."""
         self._scene = scene
 
 
@@ -76,7 +67,6 @@ class MainMenuScene(Scene):
         screen.fill(self._background)
 
     def handle_events(self, event: pg.event.Event) -> None:
-        """Обработка событий сцены."""
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_RETURN:
                 self._game.change_scene(StoryScene(self._game))
@@ -92,7 +82,6 @@ class StoryScene(Scene):
         screen.fill(self._background)
 
     def handle_events(self, event: pg.event.Event) -> None:
-        """Обработка событий сцены."""
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_RETURN:
                 self._game.change_scene(GameScene(self._game))
@@ -107,14 +96,23 @@ class GameScene(Scene):
     def render(self, screen: pg.Surface) -> None:
         screen.fill(self._background)
 
-    def update(self, delta_time: float) -> None:
-        """Обновление состояния сцены."""
+    def update(self, scaled_delta_time: float) -> None:
+        if not self._game.is_game_paused():
+            self._update_game_world(scaled_delta_time)
+        else:
+            self._update_paused_state()
+
+    def _update_game_world(self, scaled_delta_time: float) -> None:
+        pass
+
+    def _update_paused_state(self) -> None:
         pass
 
     def handle_events(self, event: pg.event.Event) -> None:
-        """Обработка событий сцены."""
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_RETURN:
+            if event.key == pg.K_ESCAPE:
+                self._game.toggle_pause()
+            elif event.key == pg.K_1:
                 self._game.change_scene(EndScene(self._game))
 
 
@@ -128,11 +126,9 @@ class EndScene(Scene):
         screen.fill(self._background)
 
     def update(self, delta_time: float) -> None:
-        """Обновление состояния сцены."""
         pass
 
     def handle_events(self, event: pg.event.Event) -> None:
-        """Обработка событий."""
         pass
 
 
