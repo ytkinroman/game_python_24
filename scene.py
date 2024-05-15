@@ -18,4 +18,3 @@ class Scene:
     def render(self, screen: pg.Surface) -> None:
         """Рендеринг сцены на экран."""
         pass
-
