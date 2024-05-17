@@ -180,3 +180,125 @@ class Player(pg.sprite.Sprite):
             explosion = Explosion(explosion_position_x, explosion_position_y)
             explosions_group.add(explosion)
             self.kill()
+
+
+class Ghost(pg.sprite.Sprite):
+    def __init__(self, x_position: int, y_position: int, x_target_position: int, y_target_position: int) -> None:
+        super().__init__()
+
+        self.__speed = 2.6
+        self.__move_animation_speed = 0.2
+
+        self.__is_alive = False
+        self.__is_moving = False
+
+        self.__x = x_position
+        self.__y = y_position
+
+        self.__target_x = x_target_position
+        self.__target_y = y_target_position
+
+        self.__looking_right = True
+        self.__frame_index = 0
+
+        self.__move_frames = []
+        for i in range(1, 8):
+            frame = pg.image.load(os.path.join("images", "Ghost", "FireGhost", f"ghost_fire_move_{i}.png"))
+            frame = pg.transform.scale(frame, (frame.get_width() * 1.8, frame.get_height() * 1.8))
+            self.__move_frames.append(frame)
+
+        self.image = self.__move_frames[self.__frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (round(self.__x), round(self.__y))
+
+    def __move_target(self) -> None:
+        """Обработка движения Духа к цели."""
+        direction_x = self.__target_x - self.__x  # РАЗНИЦА МЕЖДУ ТОЧКОЙ ЦЕЛИ И ТЕКУЩЕЙ КООРДИНАТАМИ ПО ОСИ X
+        direction_y = self.__target_y - self.__y  # РАЗНИЦА МЕЖДУ ЦЕЛЕВОЙ И ТЕКУЩЕЙ КООРДИНАТАМИ ПО ОСИ Y
+
+        distance = sqrt(direction_x ** 2 + direction_y ** 2)  # ВЫЧИСЛЯЕМ РАССТОЯНИЕ МЕЖДУ ТЕКУЩИМ ПОЛОЖЕНИЕМ И ЦЕЛЬЮ
+
+        if distance > self.__speed:
+            normalized_dx = direction_x / distance  # НОРМАЛИЗУЕМ ВЕКТОР ДВИЖЕНИЯ (ДЕЛИМ НА РАССТОЯНИЕ)
+            normalized_dy = direction_y / distance
+
+            self.__x += normalized_dx * self.__speed  # ОБНОВЛЯЕМ КООРДИНАТЫ ПРИЗРАКА С УЧЕТОМ СКОРОСТИ
+            self.__y += normalized_dy * self.__speed
+
+            self.rect.center = (round(self.__x), round(self.__y))  # ОБНОВЛЯЕМ ПРЯМОУГОЛЬНИК, ОГРАНИЧИВАЮЩИЙ СПРАЙТ
+
+            if self.__target_x > self.__x:  # ПРОВЕРЯЕМ КУДА СМОТРИТ
+                self.__looking_right = True
+            else:
+                self.__looking_right = False
+
+            self.__is_moving = True
+            # print(f"CURRENT GHOST POSITION: ({self.__x}, {self.__y}), TARGET POSITION: ({self.__target_x}, {self.__target_y})")
+        else:
+            self.set_position(self.__target_x, self.__target_y)
+            self.rect.center = (round(self.__x), round(self.__y))
+            self.__is_moving = False
+            # print(f"GHOST STOPPED AT POSITION: ({self.__x}, {self.__y})")
+
+    def move_stop(self) -> None:
+        """Остановить движение Духа."""
+        self.__target_x = round(self.__x)
+        self.__target_y = round(self.__y)
+        self.__is_moving = False
+
+    def __update_animation(self, scaled_delta_time: float) -> None:
+        """Обновление анимации Духа."""
+        move_animation_speed_coefficient = scaled_delta_time / self.__move_animation_speed  # ВЫЧИСЛЯЕМ КОЭФФИЦИЕНТЫ СКОРОСТИ АНИМАЦИЙ.
+
+        # ОБНОВЛЯЕМ ИНДЕКС ТЕКУЩЕГО КАДРА АНИМАЦИИ
+        self.__frame_index += move_animation_speed_coefficient
+        if self.__frame_index >= len(self.__move_frames):
+            self.__frame_index = 0
+
+        # ВЫБИРАЕМ НАПРАВЛЕНИЕ ДЛЯ СПРАЙТА
+        if not self.__looking_right:
+            self.image = pg.transform.flip(self.__move_frames[int(self.__frame_index)], True, False)
+        else:
+            self.image = self.__move_frames[int(self.__frame_index)]
+
+    def update(self, scaled_delta_time: float) -> None:
+        """Обновление физики и анимации Духа."""
+        self.__move_target()
+        self.__update_animation(scaled_delta_time)
+
+    def die(self, explosions_group: pg.sprite.Group) -> None:
+        """Уничтожить Духа."""
+        self.__is_alive = False
+        explosion_position = self.get_position()
+        explosion_position_x = explosion_position[0]
+        explosion_position_y = explosion_position[1]
+        explosion = Explosion(explosion_position_x, explosion_position_y)
+        explosions_group.add(explosion)
+        self.kill()
+
+    def set_target(self, new_target_position_x: int, new_target_position_y: int) -> None:
+        """Установить цель для Духа."""
+        self.__target_x = new_target_position_x
+        self.__target_y = new_target_position_y
+
+    def get_target(self) -> tuple[int, int]:
+        """Возвращает позицию цели Духа."""
+        return self.__target_x, self.__target_y
+
+    def set_position(self, new_position_x: int, new_position_y: int) -> None:
+        """Установить позицию для Духа."""
+        self.__x = new_position_x
+        self.__y = new_position_y
+
+    def get_position(self) -> tuple[int, int]:
+        """Получить позицию Духа."""
+        return self.__x, self.__y
+
+    def collide_with_player(self, player: Player) -> bool:
+        """Возвращает True, если призрак столкнулся с игроком."""
+        return pg.sprite.collide_circle(self, player)
+
+    def is_clicked(self, now_mouse_position: tuple[int, int]) -> bool:
+        """Возвращает True, если было нажатие на призрака."""
+        return self.rect.collidepoint(now_mouse_position)
+
