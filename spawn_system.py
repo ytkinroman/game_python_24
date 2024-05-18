@@ -35,48 +35,51 @@ class Spawner:
 
 class GhostSpawner:
     def __init__(self, spawn_interval: float, spawn_group: pg.sprite.Group, spawner: Spawner, player: Player) -> None:
-        self.__spawn_interval = spawn_interval  # ИНТЕРВАЛ ПРИЗЫВА ДУХОВ
+        self.__spawn_interval = spawn_interval
+
         self.__group = spawn_group
         self.__spawner = spawner
+        self.__player = player
 
         self.__is_active = False
 
         self.__delay_timer = 5  # ЧЕРЕЗ СКОЛЬКО ВКЛЮЧИТЬСЯ
 
-        self.__player = player
+        #self._player_position = self.__player.get_position()
+        #self.__target_x = (self._player_position[0] // 2)
+        #self.__target_y = (self._player_position[1] // 2)
 
-        self._player_pos = self.__player.get_position()
+        self.__set_target()
 
-        self.__target_x = self._player_pos[0] // 2
-        self.__target_y = self._player_pos[1] // 2
-
-        self.__last_spawn_time = 0  # СОХРАНЯЕМ ВРЕМЯ ПОСЛЕДНЕГО ПОЯВЛЕНИЯ ДУХА
+        self.__last_spawn_time = 0
 
     def update(self, scaled_delta_time: float) -> None:
         """Обновляет состояние спавнера."""
         if self.__is_active:
             if self.__player.is_alive():
-                if self.__delay_timer > 0:  # ПРОВЕРЯЕМ, ЕСТЬ ЛИ ТЕКУЩАЯ ЗАДЕРЖКА
-                    self.__delay_timer -= scaled_delta_time  # УМЕНЬШАЕМ ТАЙМЕР ЗАДЕРЖКИ
+                if self.__delay_timer > 0:
+                    self.__delay_timer -= scaled_delta_time
                     return
 
                 self.__last_spawn_time += scaled_delta_time
+
                 if self.__last_spawn_time >= self.__spawn_interval:
                     self.__last_spawn_time -= self.__spawn_interval
+                    self.__set_target()
                     self.spawn_ghost()
 
     def spawn_ghost(self) -> None:
-        """Спавн призрака."""
-        random_point_x, random_point_y = self.__spawner.get_random_point()
-        self.monster = Ghost(random_point_x, random_point_y, self.__target_x, self.__target_y)  # ПРИЗРАК.
-        self.__group.add(self.monster)
+        """Спавн Духа."""
+        random_point_position_x, random_point_position_y = self.__spawner.get_random_point()
+        self.__monster = Ghost(random_point_position_x, random_point_position_y, self.__player)  # ПРИЗРАК.
+        self.__group.add(self.__monster)
 
     def set_spawn_interval(self, new_interval: float) -> None:
         """Устанавливаем новый интервал."""
         self.__spawn_interval = new_interval
 
     def get_spawn_interval(self) -> float:
-        """Получаем интервал спавна духов."""
+        """Получаем время интервала в секундах."""
         return self.__spawn_interval
 
     def toggle_active(self) -> None:
@@ -84,4 +87,10 @@ class GhostSpawner:
         self.__is_active = not self.__is_active
 
     def is_active(self) -> bool:
+        """Возвращает True если активный."""
         return self.__is_active
+
+    def __set_target(self) -> None:
+        self._player_position = self.__player.get_position()
+        self.__target_x = (self._player_position[0] // 2)
+        self.__target_y = (self._player_position[1] // 2)
