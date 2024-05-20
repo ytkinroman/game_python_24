@@ -19,21 +19,21 @@ class Game:
         self._game_speed = 1.0
         self._delta_time = round(1 / self._fps, 3)
 
-        self._scene = MainMenuScene(self)
+        self._scene = GameScene(self)
 
     def toggle_pause(self) -> None:
         """Переключение состояния паузы."""
         self._paused = not self._paused
 
-    def toggle_running(self) -> None:
-        """Переключение состояния игры."""
-        self._running = not self._running
+    def stop(self) -> None:
+        """Останавливает игру."""
+        self._running = False
 
     def is_game_paused(self) -> bool:
         """Возвращает True, если игра находится в состоянии паузы."""
         return self._paused
 
-    def is_game_running(self) -> None:
+    def is_game_running(self) -> bool:
         """Возвращает True, если игра запущена."""
         return self._running
 
@@ -46,7 +46,7 @@ class Game:
         """Отображение графики игры на экране."""
         self._scene.render(screen)
 
-    def handle_event(self, event: pg.event.Event) -> None:
+    def handle_events(self, event: pg.event.Event) -> None:
         """Обработка событий, которые происходят в игре."""
         self._scene.handle_events(event)
 
@@ -59,7 +59,7 @@ class MainMenuScene(Scene):
     def __init__(self, game: Game) -> None:
         super().__init__()
         self._game = game
-        self._menu_scene__ui = UI()
+        self._menu_scene_ui = UI()
 
         self._background = colors.color_white
 
@@ -77,12 +77,12 @@ class MainMenuScene(Scene):
         self._supporting_text_position = (self._supporting_text_position_x, self._supporting_text_position_y)
         self._supporting_text = Text(self._supporting_text_title, self._supporting_text_size, self._supporting_text_color, self._supporting_text_position)
 
-        self._menu_scene__ui.add_element(self._welcome_text)
-        self._menu_scene__ui.add_element(self._supporting_text)
+        self._menu_scene_ui.add_element(self._welcome_text)
+        self._menu_scene_ui.add_element(self._supporting_text)
 
     def render(self, screen: pg.Surface) -> None:
         screen.fill(self._background)
-        self._menu_scene__ui.draw(screen)
+        self._menu_scene_ui.draw(screen)
 
     def handle_events(self, event: pg.event.Event) -> None:
         if event.type == pg.KEYDOWN:
@@ -127,7 +127,6 @@ class StoryScene(Scene):
                            "...",
                            "Всё оказалось не так просто...",
                            "Кажется, вы попали в засаду..."]
-
         self._story_texts = StoryText(self._story_list)
 
         self._story_text_title = self._story_texts.get_current_text()
@@ -164,20 +163,34 @@ class GameScene(Scene):
         self._game = game
 
         self._gameplay_scene_ui = UI()
+        self._gameplay_pause_scene_ui = UI()
 
         self._score_text_title = "0"
         self._score_text_color = colors.color_black
         self._score_text_size = 70
         self._score_text_position = (game_settings.screen_width - (game_settings.screen_width * 0.1), (game_settings.screen_height * 0.05))
         self._score_text = Text(self._score_text_title, self._score_text_size, self._score_text_color, self._score_text_position)
-        self._gameplay_scene_ui.add_element(self._score_text)
 
         self._help_text_title = "Не дайте Духам подойт близко!"
         self._help_text_color = colors.color_white
         self._help_text_size = 50
         self._help_text_position = (game_settings.screen_width // 2, game_settings.screen_height - (game_settings.screen_height * 0.05))
         self._help_text = Text(self._help_text_title, self._help_text_size, self._help_text_color, self._help_text_position)
+
+        self._gameplay_scene_ui.add_element(self._score_text)
         self._gameplay_scene_ui.add_element(self._help_text)
+
+        self._pause_text_title = "Пауза"
+        self._pause_text_color = colors.color_black
+        self._pause_text_size = 140
+        self._pause_text_position = (game_settings.screen_width * 0.15, game_settings.screen_height * 0.07)
+        self._pause_text = Text(self._pause_text_title, self._pause_text_size, self._pause_text_color, self._pause_text_position)
+
+        self.transparent_surface_pause = pg.Surface((game_settings.screen_width, game_settings.screen_height))
+        self.transparent_surface_pause.fill(colors.color_white)
+        self.transparent_surface_pause.set_alpha(128)
+
+        self._gameplay_pause_scene_ui.add_element(self._pause_text)
 
         self._background = pg.image.load(os.path.join("images", "game_background.png"))
 
@@ -199,11 +212,20 @@ class GameScene(Scene):
         self.ghosts_spawner.toggle_active()
 
     def render(self, screen: pg.Surface) -> None:
-        screen.blit(self._background, (0, 0))
-        self._ghosts_group.draw(screen)
-        self._players_group.draw(screen)
-        self._explosions_group.draw(screen)
-        self._gameplay_scene_ui.draw(screen)
+        if not self._game.is_game_paused():
+            screen.blit(self._background, (0, 0))
+            self._ghosts_group.draw(screen)
+            self._players_group.draw(screen)
+            self._explosions_group.draw(screen)
+
+            self._gameplay_scene_ui.draw(screen)
+        else:
+            screen.blit(self._background, (0, 0))
+            self._ghosts_group.draw(screen)
+            self._players_group.draw(screen)
+
+            screen.blit(self.transparent_surface_pause, (0, 0))
+            self._gameplay_pause_scene_ui.draw(screen)
 
     def update(self, scaled_delta_time: float) -> None:
         if not self._game.is_game_paused():
@@ -262,7 +284,7 @@ class FinalScene(Scene):
     def __init__(self, game: Game) -> None:
         super().__init__()
         self.__game = game
-        self.__game_settings = game_settings
+        self.__game_settings = GameSettings()
         self.__final_scene_ui = UI()
 
         self.__background = colors.color_black
@@ -276,7 +298,7 @@ class FinalScene(Scene):
         self.__support_text_title = "Чтобы выйти из игры нажмите Esc (Эскейпт)."
         self.__support_text_color = colors.color_white
         self.__support_text_size = 40
-        self.__support_text_position = (self.__game_settings.screen_width // 2, (self.__game_settings.screen_height - (self.__game_settings.screen_height * 0.05)))
+        self.__support_text_position = (self.__game_settings.screen_width // 2, (self.__game_settings.screen_height - (self.__game_settings.screen_height * 0.05)))  # ОТСТУП СНИЗУ НА 5%
         self.__support_text = Text(self.__support_text_title, self.__support_text_size, self.__support_text_color, self.__support_text_position)
 
         self.__final_scene_ui.add_element(self.__text)
@@ -289,7 +311,7 @@ class FinalScene(Scene):
     def handle_events(self, event: pg.event.Event) -> None:
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
-                self.__game.toggle_running()
+                self.__game.stop()
 
 
 if __name__ == "__main__":
@@ -309,8 +331,8 @@ if __name__ == "__main__":
         events = pg.event.get()
         for event in events:
             if event.type == pg.QUIT:
-                game.toggle_running()
-            game.handle_event(event)
+                game.stop()
+            game.handle_events(event)
 
         game.update()
         game.render(screen)

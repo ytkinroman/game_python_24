@@ -47,27 +47,27 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (round(self.__x), round(self.__y))
 
-    def set_position(self, new_player_position_x: int, new_player_position_y: int) -> None:
-        """Установить позицию для игрока."""
-        self.__x = new_player_position_x
-        self.__y = new_player_position_y
+    def set_position(self, new_position_x: int, new_position_y: int) -> None:
+        """Установить новую позицию."""
+        self.__x = new_position_x
+        self.__y = new_position_y
 
     def get_position(self) -> tuple[int, int]:
-        """Получить позицию игрока."""
+        """Получить позицию."""
         return self.__x, self.__y
 
-    def set_target_position(self, new_target_position_x: int, new_target_position_y: int) -> None:
-        """Установить цель для игрока."""
-        self.__target_x = new_target_position_x
-        self.__target_y = new_target_position_y
+    def set_target_position(self, new_target_x: int, new_target_y: int) -> None:
+        """Установить новую цель."""
+        self.__target_x = new_target_x
+        self.__target_y = new_target_y
 
     def get_target_position(self) -> tuple[int, int]:
-        """Получить позицию цели игрока."""
+        """Получить позицию цели."""
         return self.__target_x, self.__target_y
 
-    def add_score(self, add_player_score: int) -> None:
+    def add_score(self, score: int) -> None:
         """Добавить игроку очки."""
-        self.__score += add_player_score
+        self.__score += score
 
     def get_score(self) -> int:
         """Получить кол-во очков игрока."""
@@ -99,10 +99,6 @@ class Player(pg.sprite.Sprite):
 
     def __move_target(self, scaled_delta_time: float) -> None:
         """Обработка движения игрока к цели."""
-        if self.__delay_timer > 0:  # ПРОВЕРЯЕМ, ЕСТЬ ЛИ ТЕКУЩАЯ ЗАДЕРЖКА.
-            self.__delay_timer -= scaled_delta_time  # УМЕНЬШАЕМ ТАЙМЕР ЗАДЕРЖКИ.
-            return
-
         direction_x = self.__target_x - self.__x  # РАЗНИЦА МЕЖДУ ТОЧКОЙ ЦЕЛИ И ТЕКУЩЕЙ КООРДИНАТАМИ ПО ОСИ X.
         direction_y = self.__target_y - self.__y  # РАЗНИЦА МЕЖДУ ЦЕЛЕВОЙ И ТЕКУЩЕЙ КООРДИНАТАМИ ПО ОСИ Y.
 
@@ -160,8 +156,7 @@ class Player(pg.sprite.Sprite):
 
     def set_delay(self, seconds: float) -> None:
         """Остановить игрока на какое-то время."""
-        if self.get_position() != self.get_target_position():
-            self.__delay_timer = seconds
+        self.__delay_timer = seconds
 
     def move_stop(self) -> None:
         """Остановить движение Игрока."""
