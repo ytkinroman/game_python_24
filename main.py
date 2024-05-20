@@ -19,7 +19,7 @@ class Game:
         self._game_speed = 1.0
         self._delta_time = round(1 / self._fps, 3)
 
-        self._scene = GameScene(self)
+        self._scene = MainMenuScene(self)
 
     def toggle_pause(self) -> None:
         """Переключение состояния паузы."""
@@ -171,7 +171,7 @@ class GameScene(Scene):
         self._score_text_position = (game_settings.screen_width - (game_settings.screen_width * 0.1), (game_settings.screen_height * 0.05))
         self._score_text = Text(self._score_text_title, self._score_text_size, self._score_text_color, self._score_text_position)
 
-        self._help_text_title = "Не дайте Духам подойт близко!"
+        self._help_text_title = "Не дайте Духам приблизится!"
         self._help_text_color = colors.color_white
         self._help_text_size = 50
         self._help_text_position = (game_settings.screen_width // 2, game_settings.screen_height - (game_settings.screen_height * 0.05))
@@ -186,9 +186,9 @@ class GameScene(Scene):
         self._pause_text_position = (game_settings.screen_width * 0.15, game_settings.screen_height * 0.07)
         self._pause_text = Text(self._pause_text_title, self._pause_text_size, self._pause_text_color, self._pause_text_position)
 
-        self.transparent_surface_pause = pg.Surface((game_settings.screen_width, game_settings.screen_height))
-        self.transparent_surface_pause.fill(colors.color_white)
-        self.transparent_surface_pause.set_alpha(128)
+        self.pause_transparent_surface = pg.Surface((game_settings.screen_width, game_settings.screen_height))
+        self.pause_transparent_surface.fill(colors.color_white)
+        self.pause_transparent_surface.set_alpha(128)
 
         self._gameplay_pause_scene_ui.add_element(self._pause_text)
 
@@ -213,27 +213,31 @@ class GameScene(Scene):
 
     def render(self, screen: pg.Surface) -> None:
         if not self._game.is_game_paused():
-            screen.blit(self._background, (0, 0))
-            self._ghosts_group.draw(screen)
-            self._players_group.draw(screen)
-            self._explosions_group.draw(screen)
-
-            self._gameplay_scene_ui.draw(screen)
+            self.__render_game_world()
         else:
-            screen.blit(self._background, (0, 0))
-            self._ghosts_group.draw(screen)
-            self._players_group.draw(screen)
+            self.__render_game_pause()
 
-            screen.blit(self.transparent_surface_pause, (0, 0))
-            self._gameplay_pause_scene_ui.draw(screen)
+    def __render_game_world(self) -> None:
+        screen.blit(self._background, (0, 0))
+        self._ghosts_group.draw(screen)
+        self._players_group.draw(screen)
+        self._explosions_group.draw(screen)
+        self._gameplay_scene_ui.draw(screen)
+
+    def __render_game_pause(self) -> None:
+        screen.blit(self._background, (0, 0))
+        self._ghosts_group.draw(screen)
+        self._players_group.draw(screen)
+        screen.blit(self.pause_transparent_surface, (0, 0))
+        self._gameplay_pause_scene_ui.draw(screen)
 
     def update(self, scaled_delta_time: float) -> None:
         if not self._game.is_game_paused():
-            self._update_game_world(scaled_delta_time)
+            self.__update_game_world(scaled_delta_time)
         else:
-            self._update_paused_state()
+            self.__update_game_pause()
 
-    def _update_game_world(self, scaled_delta_time: float) -> None:
+    def __update_game_world(self, scaled_delta_time: float) -> None:
         if self._player.get_score() >= 200 and self.ghosts_spawner.is_active():
             self.ghosts_spawner.toggle_active()
             if not self._ghosts_group.sprites():
@@ -244,18 +248,18 @@ class GameScene(Scene):
 
         self.ghosts_spawner.update(scaled_delta_time)
 
-        for phantom in self._ghosts_group:  # ДРУГОЕ ИМЯ ПЕРЕМЕННОЙ, ЧТОБЫ НЕ ПУТАТСЯ
+        for phantom in self._ghosts_group:
             if phantom.collide_with_player(self._player):
-                self.ghosts_spawner.toggle_active()  # ВЫКЛЮЧАЕМ СПАВНЕР
+                self.ghosts_spawner.toggle_active()
                 self._player.die(self._explosions_group)
-                for g in self._ghosts_group:  # СОКРАЩЕННОЕ ИМЯ ПЕРЕМЕННОЙ, ЧТОБЫ НЕ ПУТАТСЯ
+                for g in self._ghosts_group:
                     g.move_stop()
 
         self._players_group.update(scaled_delta_time)
         self._ghosts_group.update(scaled_delta_time)
         self._explosions_group.update(scaled_delta_time)
 
-    def _update_paused_state(self) -> None:
+    def __update_game_pause(self) -> None:
         pass
 
     def handle_events(self, event: pg.event.Event) -> None:
@@ -270,14 +274,16 @@ class GameScene(Scene):
                     self._player.set_target_position(mouse_position[0], mouse_position[1])
                 elif event.key == pg.K_d:
                     self._player.die(self._explosions_group)
-        elif event.type == pg.MOUSEBUTTONDOWN:  # МЫШЬ
+        elif event.type == pg.MOUSEBUTTONDOWN:
             if not game.is_game_paused() and event.button == 1 and self._player.is_alive():
                 mouse_position = pg.mouse.get_pos()
                 for ghost in self._ghosts_group:
-                    if ghost.is_clicked(mouse_position):  # ПОДРЫВАЕМ ДУХА ПО КЛИКУ НА НЕГО.
+                    if ghost.is_clicked(mouse_position):
                         ghost.die(self._explosions_group)
                         self._player.add_score(50)
                         self._score_text.set_text(str(self._player.get_score()))
+
+# class EndingScene
 
 
 class FinalScene(Scene):
