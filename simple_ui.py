@@ -51,6 +51,70 @@ class UIPause(UI):
         self.add_element(self.__support)
 
 
+class UIGamePlay(UI):
+    def __init__(self) -> None:
+        """Инициализация пользовательского игрового интерфейса."""
+        super().__init__()
+
+        self.__game_settings = GameSettings()
+        self.__colors = Colors()
+
+
+
+        self.__support_title = "* Не позволяйте Духам подойти слишком близко! *"
+        self.__support_color = self.__colors.COLOR_WHITE
+        self.__support_size = 60
+        self.__support_position = (self.__game_settings.SCREEN_WIDTH  // 2, self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.06))
+        self.support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
+
+        self.add_element(self.support)
+
+        self.__score_title = "0000"
+        self.__score_color = self.__colors.COLOR_WHITE
+        self.__score_size = 80
+        self.__score_position = (self.__game_settings.SCREEN_WIDTH - (self.__game_settings.SCREEN_WIDTH  * 0.1), (self.__game_settings.SCREEN_HEIGHT * 0.05))
+        self.score = Text(self.__score_title, self.__score_size, self.__score_color, self.__score_position)
+
+        self.add_element(self.score)
+
+
+class UIMainMenu(UI):
+    def __init__(self) -> None:
+        """Инициализация интерфейса главного меню."""
+        super().__init__()
+
+        self.__game_settings = GameSettings()
+        self.__colors = Colors()
+
+        self.__background = Background(self.__colors.COLOR_WHITE,(self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT),(0, 0))
+
+        self.add_element(self.__background)
+
+        self.__welcome_title = "Добро пожаловать в игру!"
+        self.__welcome_color = self.__colors.COLOR_BLACK
+        self.__welcome_size = 70
+        self.__welcome_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT // 3)
+        self.__welcome = Text(self.__welcome_title, self.__welcome_size, self.__welcome_color, self.__welcome_position)
+
+        self.add_element(self.__welcome)
+
+        self.__name_title = '"Введите название игры"'
+        self.__name_color = self.__colors.COLOR_BLACK
+        self.__name_size = 90
+        self.__name_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT // 2)
+        self.__name = Text(self.__name_title, self.__name_size, self.__name_color, self.__name_position)
+
+        self.add_element(self.__name)
+
+        self.__support_title = "Чтобы начать игру нажмите Space (Пробел)."
+        self.__support_color = self.__colors.COLOR_GRAY
+        self.__support_size = 50
+        self.__support_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.07))  # ОТСТУП СНИЗУ НА 7%
+        self.__support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
+
+        self.add_element(self.__support)
+
+
 class Text:
     def __init__(self, text: str, size: int, color: pg.Color, position: tuple[int, int]) -> None:
         """Инициализация текстового элемента пользовательского интерфейса."""
