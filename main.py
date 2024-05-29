@@ -146,6 +146,8 @@ class GameScene(Scene):
         self.__colors = Colors()
         self.__game = game
 
+        self.__next_scene_delay = 6
+
         self.__environment_group = Environment()
 
         self.__players_group = pg.sprite.Group()
@@ -158,8 +160,6 @@ class GameScene(Scene):
         self.__player = Player(2000, 2000)
         self.__players_group.add(self.__player)
 
-        # Тут нужна задержка 5 сек.
-
         self.__player.toggle_looking_right()
         self.__player.set_position(self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT // 2)
         self.__player.set_target_position(self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT // 2)
@@ -169,15 +169,11 @@ class GameScene(Scene):
                               (self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT // 2),
                               (self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT),
                               (0, self.__game_settings.SCREEN_HEIGHT), (self.__game_settings.SCREEN_HEIGHT, 0)]
-        self.__spawner = Spawner()
-        self.__spawner.add_points(self.__points_list)
 
-        self.__ghosts_spawner = GhostSpawner(1.8, self.__ghosts_group, self.__spawner, self.__player)
+        self.__ghosts_spawner = GhostSpawner(1.8, self.__ghosts_group, self.__player)
+        self.__ghosts_spawner.add_points(self.__points_list)
 
-        # Задержка в 5 сек перед включением спавнера
-
-        # self.__ghosts_spawner.set_active()
-
+        self.__ghosts_spawner.set_active()
 
     def update(self, scaled_delta_time: float) -> None:
         if not self.__game.is_game_paused():
@@ -186,7 +182,6 @@ class GameScene(Scene):
             self.__update_game_pause()
 
     def __update_game_world(self, scaled_delta_time: float) -> None:
-        # print(self.__ghosts_spawner.get_spawn_interval())
         self.__players_group.update(scaled_delta_time)
         self.__ghosts_group.update(scaled_delta_time)
         self.__explosions_group.update(scaled_delta_time)
@@ -194,22 +189,21 @@ class GameScene(Scene):
         if self.__player.is_alive():
             self.__ghosts_spawner.update(scaled_delta_time)
 
-            if self.__player.get_score() >= 600:
+            if self.__player.get_score() >= 200:
                 self.__ghosts_spawner.stop_active()
 
                 if not self.__ghosts_group.sprites():
-                    # задержка 2 секунды
-                    print("111111")
 
                     self.__player.set_target_position(0, self.__game_settings.SCREEN_HEIGHT // 2)
-                    self.__player.set_position(700, 700)
 
-                    # следующая сцена
+                    if self.__player.get_position() == self.__player.get_target_position():
+                        self.__player.set_position(2000, 2000)
 
-            elif self.__player.get_score() >= 400:
-                self.__ghosts_spawner.set_spawn_interval(1.1)
-            elif self.__player.get_score() >= 200:
-                self.__ghosts_spawner.set_spawn_interval(1.4)
+                    if self.__next_scene_delay > 0:
+                        self.__next_scene_delay -= scaled_delta_time
+                        return
+
+                    self.__game.change_scene(EndingScene(self.__game, self.__player))
 
             for ghost in self.__ghosts_group:
                 if ghost.is_collide_with_player():
@@ -221,9 +215,10 @@ class GameScene(Scene):
             for ghost in self.__ghosts_group:
                 ghost.move_stop()
 
-            # задержка 2 секунды
-
-            #self.__game.change_scene(EndingScene(self.__game, self.__player))
+            if self.__next_scene_delay > 0:
+                self.__next_scene_delay -= scaled_delta_time
+                return
+            self.__game.change_scene(EndingScene(self.__game, self.__player))
 
     def __update_game_pause(self) -> None:
         pass
@@ -253,12 +248,6 @@ class GameScene(Scene):
             if event.key == pg.K_ESCAPE:
                 self.__game.toggle_pause()
             if not self.__game.is_game_paused() and self.__player.is_alive():
-                if event.key == pg.K_1:  # вкл и выкл спавнереа
-                    self.__ghosts_spawner.toggle_active()
-                if event.key == pg.K_2:  # увеличить скорость спавна
-                    self.__ghosts_spawner.downgrade_spawn_interval()
-                if event.key == pg.K_3: # следующая сцена
-                    self.__game.change_scene(EndingScene(self.__game, self.__player))
                 if event.key == pg.K_4:
                     mouse_position = pg.mouse.get_pos()
                     self.__player.set_target_position(mouse_position[0], mouse_position[1])
@@ -295,9 +284,9 @@ class EndingScene(Scene):
         self.__text = Text(self.__text_title, self.__text_size, self.__text_color, self.__text_position)
 
         if self.__player.is_alive():
-            self.__description_title = "Волшебник убежал, в его руках остался только костюм курицы..."
+            self.__description_title = "Волшебник убежал, с ним остался только костюм курицы... (Хорошая концовка)"
         else:
-            self.__description_title = "Волшебник, погиб оказавшийся в безвыходном положении..."
+            self.__description_title = "Волшебник, погиб оказавшийся в безвыходном положении... (Плохая концовка)"
 
         self.__description_color = self.__colors.COLOR_GRAY
         self.__description_size = 45
@@ -307,12 +296,19 @@ class EndingScene(Scene):
         self.__support_title = "Чтобы выйти из игры нажмите Esc (Эскейпт)."
         self.__support_color = self.__colors.COLOR_GRAY
         self.__support_size = 40
-        self.__support_position = (self.__game_settings.SCREEN_WIDTH // 2, (self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.06)))  # ОТСТУП СНИЗУ НА 6%
+        self.__support_position = (self.__game_settings.SCREEN_WIDTH // 2, (self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.05)))  # ОТСТУП СНИЗУ НА 5%
         self.__support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
+
+        self.__replay_title = "Чтобы играть ещё раз нажмите Space (Пробел)."
+        self.__replay_color = self.__colors.COLOR_GRAY
+        self.__replay_size = 40
+        self.__replay_position = (self.__game_settings.SCREEN_WIDTH // 2, (self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.10)))  # ОТСТУП СНИЗУ НА 10%
+        self.__replay = Text(self.__replay_title, self.__replay_size, self.__replay_color, self.__replay_position)
 
         self.__final_scene_ui.add_element(self.__text)
         self.__final_scene_ui.add_element(self.__description)
         self.__final_scene_ui.add_element(self.__support)
+        self.__final_scene_ui.add_element(self.__replay)
 
     def render(self, screen: pg.Surface) -> None:
         screen.fill(self.__background)
@@ -322,6 +318,8 @@ class EndingScene(Scene):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 self.__game.stop()
+            if event.key == pg.K_SPACE:
+                self.__game.change_scene(GameScene(self.__game))
 
 
 if __name__ == "__main__":

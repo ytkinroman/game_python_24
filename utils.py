@@ -1,13 +1,15 @@
 class GameSettings:
     """Класс для хранения настроек игры."""
-    SCREEN_WIDTH, SCREEN_HEIGHT = 1024, 768
-    SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-    SCREEN_TITLE = "PyGame | PyGame PyGame | Name Name Name Name Name Name"
-    SCREEN_ICON = "images/screen_game_logo.png"
-
     GAME_FPS_MAX = 60
     GAME_BASE_FONT = "fonts/thin_pixel-7.ttf"
     GAME_BASE_FONT_SIZE = 40
+    GAME_TITLE = "Введите название игры"
+    GAME_AUTHOR = "Крюков Никита Андреевич (РИ-130915)"
+
+    SCREEN_WIDTH, SCREEN_HEIGHT = 1024, 768
+    SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
+    SCREEN_TITLE = f"| Python | PyGame | {GAME_TITLE} | {GAME_AUTHOR} | АТ-04 |"
+    SCREEN_ICON = "images/screen_game_logo.png"
 
 
 class Colors:
