@@ -3,12 +3,13 @@ class GameSettings:
     GAME_FPS_MAX = 60
     GAME_BASE_FONT = "fonts/thin_pixel-7.ttf"
     GAME_BASE_FONT_SIZE = 40
-    GAME_TITLE = "Введите название игры"
+    GAME_NAME = "Введите название игры"
     GAME_AUTHOR = "Крюков Никита Андреевич (РИ-130915)"
+    GAME_AUTHOR_NICKNAME = "ytkinroman"
 
     SCREEN_WIDTH, SCREEN_HEIGHT = 1024, 768
     SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-    SCREEN_TITLE = f"| Python | PyGame | {GAME_TITLE} | {GAME_AUTHOR} | АТ-04 |"
+    SCREEN_TITLE = f"| Python | PyGame | {GAME_NAME} | {GAME_AUTHOR} | АТ-04 | {GAME_NAME}"
     SCREEN_ICON = "images/screen_game_logo.png"
 
 

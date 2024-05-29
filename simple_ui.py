@@ -98,8 +98,8 @@ class UIMainMenu(UI):
 
         self.add_element(self.__welcome)
 
-        self.__name_title = '"Введите название игры"'
-        self.__name_color = self.__colors.COLOR_BLACK
+        self.__name_title = '"' + self.__game_settings.GAME_NAME + '"'
+        self.__name_color = self.__colors.COLOR_GREEN
         self.__name_size = 90
         self.__name_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT // 2)
         self.__name = Text(self.__name_title, self.__name_size, self.__name_color, self.__name_position)
@@ -113,6 +113,14 @@ class UIMainMenu(UI):
         self.__support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
 
         self.add_element(self.__support)
+
+        self.__author_title = "@" + self.__game_settings.GAME_AUTHOR_NICKNAME
+        self.__author_color = self.__colors.COLOR_GRAY
+        self.__author_size = 50
+        self.__author_position = (self.__game_settings.SCREEN_WIDTH * 0.1, self.__game_settings.SCREEN_HEIGHT * 0.05)
+        self.__author = Text(self.__author_title, self.__author_size, self.__author_color, self.__author_position)
+
+        self.add_element(self.__author)
 
 
 class Text:
