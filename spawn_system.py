@@ -33,18 +33,17 @@ class Spawner:
         return random_point.get_position()
 
 
-class GhostSpawner:
-    def __init__(self, spawn_interval: float, spawn_group: pg.sprite.Group, spawner: Spawner, player: Player) -> None:
+class GhostSpawner(Spawner):
+    def __init__(self, spawn_interval: float, spawn_group: pg.sprite.Group, player: Player) -> None:
+        super().__init__()
         self.__spawn_interval = spawn_interval
         self.__group = spawn_group
-        self.__spawner = spawner
         self.__player = player
 
         self.__is_active = False
 
+        self.__start_delay_timer = 6
         self.__last_spawn_time = 0
-
-        self.__start_delay_timer = 5
 
     def update(self, scaled_delta_time: float) -> None:
         """Обновляет состояние спавнера."""
@@ -62,33 +61,25 @@ class GhostSpawner:
 
     def __spawn_ghost(self) -> None:
         """Спавнер Духов."""
-        random_point_position_x, random_point_position_y = self.__spawner.get_random_point()
+        random_point_position_x, random_point_position_y = self.get_random_point()
         ghost = Ghost(random_point_position_x, random_point_position_y, self.__player)
         self.__group.add(ghost)
 
     def get_spawn_interval(self) -> float:
-        """1111."""
+        """Возвращает текущий интервал спавна."""
         return self.__spawn_interval
 
     def set_spawn_interval(self, new_interval: float) -> None:
         """Устанавливаем новый интервал."""
         self.__spawn_interval = new_interval
 
-    def downgrade_spawn_interval(self) -> None:
-        """111111."""
-        self.__spawn_interval -= 0.2
-
     def set_active(self) -> None:
-        """1111."""
+        """Активирует спавнер."""
         self.__is_active = True
 
     def stop_active(self) -> None:
-        """1111."""
+        """Деактивирует спавнер."""
         self.__is_active = False
-
-    def toggle_active(self) -> None:
-        """Изменяет состояние спавнера. Включает или выключает."""
-        self.__is_active = not self.__is_active
 
     def is_active(self) -> bool:
         """Возвращает True если активный."""
