@@ -40,6 +40,8 @@ class GhostSpawner(Spawner):
         self.__group = spawn_group
         self.__player = player
 
+        self.__spawn_interval_controller = SpawnIntervalController(self)
+
         self.__is_active = False
 
         self.__start_delay_timer = 6
@@ -58,6 +60,8 @@ class GhostSpawner(Spawner):
                 if self.__last_spawn_time >= self.__spawn_interval:
                     self.__last_spawn_time = 0
                     self.__spawn_ghost()
+
+        self.__spawn_interval_controller.update(self.__player.get_score())
 
     def __spawn_ghost(self) -> None:
         """Спавнер Духов."""
@@ -84,3 +88,21 @@ class GhostSpawner(Spawner):
     def is_active(self) -> bool:
         """Возвращает True если активный."""
         return self.__is_active
+
+
+class SpawnIntervalController:
+    def __init__(self, ghost_spawner: GhostSpawner):
+        self.__ghost_spawner = ghost_spawner
+        self.__base_interval = self.__ghost_spawner.get_spawn_interval()
+        self.__interval_decrease = 0.062
+        self.__score_threshold = 50
+
+    def update(self, score):
+        """Метод, который обновляет интервал спавна для GhostSpawner на основе score игрока."""
+        num_decreases = score // self.__score_threshold
+        spawn_interval = self.__base_interval - (num_decreases * self.__interval_decrease)
+
+        if spawn_interval < 0.2:
+            spawn_interval = 0.2
+
+        self.__ghost_spawner.set_spawn_interval(spawn_interval)
