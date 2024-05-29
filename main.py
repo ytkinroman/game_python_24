@@ -5,7 +5,7 @@ from simple_ui import UI, Text, UIPause, UIGamePlay, UIMainMenu
 from story import StoryText
 from scene import Scene
 from entities import Player
-from spawn_system import Spawner, GhostSpawner
+from spawn_system import GhostSpawner
 from environment import Environment
 
 
@@ -18,7 +18,7 @@ class Game:
         self._game_speed = 1.0
         self._delta_time = round(1 / self._fps, 3)
 
-        self._scene = GameScene(self)
+        self._scene = MainMenuScene(self)
 
     def toggle_pause(self) -> None:
         """Переключение состояния паузы."""
@@ -170,7 +170,7 @@ class GameScene(Scene):
                               (self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT),
                               (0, self.__game_settings.SCREEN_HEIGHT), (self.__game_settings.SCREEN_HEIGHT, 0)]
 
-        self.__ghosts_spawner = GhostSpawner(1.8, self.__ghosts_group, self.__player)
+        self.__ghosts_spawner = GhostSpawner(1.4, self.__ghosts_group, self.__player)
         self.__ghosts_spawner.add_points(self.__points_list)
 
         self.__ghosts_spawner.set_active()
@@ -182,6 +182,9 @@ class GameScene(Scene):
             self.__update_game_pause()
 
     def __update_game_world(self, scaled_delta_time: float) -> None:
+
+        print(self.__ghosts_spawner.get_spawn_interval())
+
         self.__players_group.update(scaled_delta_time)
         self.__ghosts_group.update(scaled_delta_time)
         self.__explosions_group.update(scaled_delta_time)
@@ -189,15 +192,12 @@ class GameScene(Scene):
         if self.__player.is_alive():
             self.__ghosts_spawner.update(scaled_delta_time)
 
-            if self.__player.get_score() >= 200:
+            if self.__player.get_score() >= 800:
                 self.__ghosts_spawner.stop_active()
 
                 if not self.__ghosts_group.sprites():
 
-                    self.__player.set_target_position(0, self.__game_settings.SCREEN_HEIGHT // 2)
-
-                    if self.__player.get_position() == self.__player.get_target_position():
-                        self.__player.set_position(2000, 2000)
+                    self.__player.set_target_position(-500, self.__game_settings.SCREEN_HEIGHT // 2)
 
                     if self.__next_scene_delay > 0:
                         self.__next_scene_delay -= scaled_delta_time
@@ -299,7 +299,7 @@ class EndingScene(Scene):
         self.__support_position = (self.__game_settings.SCREEN_WIDTH // 2, (self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.05)))  # ОТСТУП СНИЗУ НА 5%
         self.__support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
 
-        self.__replay_title = "Чтобы играть ещё раз нажмите Space (Пробел)."
+        self.__replay_title = "Чтобы поиграть ещё раз нажмите Space (Пробел)."
         self.__replay_color = self.__colors.COLOR_GRAY
         self.__replay_size = 40
         self.__replay_position = (self.__game_settings.SCREEN_WIDTH // 2, (self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.10)))  # ОТСТУП СНИЗУ НА 10%
