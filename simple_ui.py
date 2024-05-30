@@ -1,5 +1,6 @@
 import pygame as pg
 from utils import GameSettings, Colors
+from player import Player
 
 
 class UI:
@@ -25,9 +26,7 @@ class UIPause(UI):
         self.__game_settings = GameSettings()
         self.__colors = Colors()
 
-        self.__pause_background = Background(self.__colors.COLOR_WHITE,
-                                             (self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT),
-                                             (0, 0))
+        self.__pause_background = Background(self.__colors.COLOR_WHITE,(self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT),(0, 0))
         self.__pause_background.surface.set_alpha(128)
 
         self.add_element(self.__pause_background)
@@ -35,8 +34,7 @@ class UIPause(UI):
         self.__pause_title = "Пауза"
         self.__pause_color = self.__colors.COLOR_BLACK
         self.__pause_size = 150
-        self.__pause_position = (self.__game_settings.SCREEN_WIDTH * 0.15,
-                                 self.__game_settings.SCREEN_HEIGHT * 0.07)  # ОТСТУП СЛЕВА 15%, СВЕРХУ 7% ЭКРАНА
+        self.__pause_position = (self.__game_settings.SCREEN_WIDTH * 0.15, self.__game_settings.SCREEN_HEIGHT * 0.07)  # ОТСТУП СЛЕВА 15%, СВЕРХУ 7% ЭКРАНА
         self.__pause = Text(self.__pause_title, self.__pause_size, self.__pause_color, self.__pause_position)
 
         self.add_element(self.__pause)
@@ -44,8 +42,7 @@ class UIPause(UI):
         self.__support_title = "Чтобы продолжить игру нажмите Esc (Эскейпт)."
         self.__support_color = self.__colors.COLOR_BLACK
         self.__support_size = 60
-        self.__support_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT - (
-                    self.__game_settings.SCREEN_HEIGHT * 0.07))  # ОТСТУП 6% СНИЗУ ЭКРАНА
+        self.__support_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.07))  # ОТСТУП 6% СНИЗУ ЭКРАНА
         self.__support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
 
         self.add_element(self.__support)
@@ -62,7 +59,7 @@ class UIGamePlay(UI):
         self.__support_title = "* Не позволяйте Духам подойти слишком близко! *"
         self.__support_color = self.__colors.COLOR_WHITE
         self.__support_size = 60
-        self.__support_position = (self.__game_settings.SCREEN_WIDTH  // 2, self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.06))
+        self.__support_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.06))
         self.support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
 
         self.add_element(self.support)
@@ -70,10 +67,13 @@ class UIGamePlay(UI):
         self.__score_title = "0000"
         self.__score_color = self.__colors.COLOR_WHITE
         self.__score_size = 80
-        self.__score_position = (self.__game_settings.SCREEN_WIDTH - (self.__game_settings.SCREEN_WIDTH  * 0.1), (self.__game_settings.SCREEN_HEIGHT * 0.05))
+        self.__score_position = (self.__game_settings.SCREEN_WIDTH - (self.__game_settings.SCREEN_WIDTH * 0.1), (self.__game_settings.SCREEN_HEIGHT * 0.05))
         self.score = Text(self.__score_title, self.__score_size, self.__score_color, self.__score_position)
 
         self.add_element(self.score)
+
+    def update(self, player: Player):
+        self.score.set_text("{:0>4d}".format(player.get_score()))
 
 
 class UIMainMenu(UI):
