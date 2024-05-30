@@ -142,6 +142,27 @@ class Entity(pg.sprite.Sprite):
             explosions_group.add(explosion)
             self.kill()
 
+    def load_frames(self, animation_type: str, animation_object: str, frames_quantity: int, scale_factor: float) -> list:
+        frames = []
+        for i in range(1, frames_quantity + 1):
+            frame = pg.image.load(
+                os.path.join("images", animation_object, animation_type, f"{animation_object.lower()}_{animation_type.lower()}_{i}.png"))
+            frame = pg.transform.scale(frame, (round(frame.get_width() * scale_factor), round(frame.get_height() * scale_factor)))
+            frames.append(frame)
+        return frames
+
+
+class PlayerModel:
+    pass
+
+
+class PlayerView:
+    pass
+
+
+class PlayerController:
+    pass
+
 
 class Player(Entity):
     def __init__(self, x_position: int, y_position: int) -> None:
@@ -161,17 +182,8 @@ class Player(Entity):
         self.__idle_animation_speed = 0.25
         self.__move_animation_speed = 0.08
 
-        self.__idle_frames = []
-        for i in range(1, self.__idle_frames_quantity + 1):
-            frame = pg.image.load(os.path.join("images", "Player", "Idle", f"player_idle_{i}.png"))
-            frame = pg.transform.scale(frame, (frame.get_width() * self.__scale_frames_factor, frame.get_height() * self.__scale_frames_factor))
-            self.__idle_frames.append(frame)
-
-        self.__move_frames = []
-        for i in range(1, self.__move_frames_quantity + 1):
-            frame = pg.image.load(os.path.join("images", "Player", "Walk", f"player_walk_{i}.png"))
-            frame = pg.transform.scale(frame, (frame.get_width() * self.__scale_frames_factor, frame.get_height() * self.__scale_frames_factor))
-            self.__move_frames.append(frame)
+        self.__idle_frames = self.load_frames("Idle", "Player", self.__idle_frames_quantity, self.__scale_frames_factor)
+        self.__move_frames = self.load_frames("Walk", "Player", self.__move_frames_quantity, self.__scale_frames_factor)
 
         self.image = self.__idle_frames[0]
         self.rect = self.image.get_rect()
@@ -213,6 +225,7 @@ class Player(Entity):
     def add_score_random(self) -> None:
         random_score = random.randint(20, 30)
         self.__score += random_score
+
 
 
 class Ghost(Entity):
