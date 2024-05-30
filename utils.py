@@ -1,3 +1,16 @@
+import pygame as pg
+import os
+
+
+def load_frames(animation_type: str, animation_object: str, frames_quantity: int, scale_factor: float) -> list:
+    frames = []
+    for i in range(1, frames_quantity + 1):
+        frame = pg.image.load(os.path.join("images", animation_object, animation_type, f"{animation_object.lower()}_{animation_type.lower()}_{i}.png"))
+        frame = pg.transform.scale(frame,(round(frame.get_width() * scale_factor), round(frame.get_height() * scale_factor)))
+        frames.append(frame)
+    return frames
+
+
 class GameSettings:
     """Класс для хранения настроек игры."""
     GAME_FPS_MAX = 60
