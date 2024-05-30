@@ -73,7 +73,7 @@ class UIGamePlay(UI):
         self.add_element(self.score)
 
     def update(self, player: Player):
-        self.score.set_text("{:0>4d}".format(player.get_score()))
+        self.score.set_text("{:0>4d}".format(player.model.get_score()))
 
 
 class UIMainMenu(UI):
