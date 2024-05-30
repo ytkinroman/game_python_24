@@ -145,8 +145,7 @@ class Entity(pg.sprite.Sprite):
     def load_frames(self, animation_type: str, animation_object: str, frames_quantity: int, scale_factor: float) -> list:
         frames = []
         for i in range(1, frames_quantity + 1):
-            frame = pg.image.load(
-                os.path.join("images", animation_object, animation_type, f"{animation_object.lower()}_{animation_type.lower()}_{i}.png"))
+            frame = pg.image.load(os.path.join("images", animation_object, animation_type, f"{animation_object.lower()}_{animation_type.lower()}_{i}.png"))
             frame = pg.transform.scale(frame, (round(frame.get_width() * scale_factor), round(frame.get_height() * scale_factor)))
             frames.append(frame)
         return frames
@@ -171,6 +170,8 @@ class Player(Entity):
         self.set_speed(self.__speed)
 
         self.__score = 0
+        self.__score_random_min = 20
+        self.__score_random_max = 35
 
         self.__looking_right = True
 
@@ -223,10 +224,8 @@ class Player(Entity):
         self.__score += score
 
     def add_score_random(self) -> None:
-        random_score = random.randint(20, 30)
-        self.__score += random_score
-
-
+        """Добавить игроку случайное кол-во очков."""
+        self.__score += random.randint(self.__score_random_min, self.__score_random_max)
 
 class Ghost(Entity):
     def __init__(self, x_position: int, y_position: int, player: Player) -> None:
