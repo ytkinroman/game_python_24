@@ -59,8 +59,6 @@ class UIGamePlay(UI):
         self.__game_settings = GameSettings()
         self.__colors = Colors()
 
-
-
         self.__support_title = "* Не позволяйте Духам подойти слишком близко! *"
         self.__support_color = self.__colors.COLOR_WHITE
         self.__support_size = 60
