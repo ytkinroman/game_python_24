@@ -17,7 +17,7 @@ class GameSettings:
     GAME_BASE_FONT = "fonts/thin_pixel-7.ttf"
     GAME_BASE_FONT_SIZE = 40
     GAME_NAME = "Введите название игры"
-    GAME_AUTHOR = "Крюков Н.А."
+    GAME_AUTHOR = "Крюков Никита А."
     GAME_AUTHOR_GROUP = "РИ-130915"
 
     SCREEN_WIDTH, SCREEN_HEIGHT = 1024, 768

@@ -240,13 +240,21 @@ class UIMainMenu(UI):
 
         self.add_element(self.__support)
 
-        self.__author_title = "@" + self.__game_settings.GAME_AUTHOR_NICKNAME
+        self.__author_title = self.__game_settings.GAME_AUTHOR
         self.__author_color = self.__colors.COLOR_GRAY
         self.__author_size = 50
-        self.__author_position = (self.__game_settings.SCREEN_WIDTH * 0.1, self.__game_settings.SCREEN_HEIGHT * 0.05)
+        self.__author_position = (self.__game_settings.SCREEN_WIDTH * 0.15, self.__game_settings.SCREEN_HEIGHT * 0.05)
         self.__author = Text(self.__author_title, self.__author_size, self.__author_color, self.__author_position)
 
         self.add_element(self.__author)
+
+        self.__author_group_title = self.__game_settings.GAME_AUTHOR_GROUP
+        self.__author_group_color = self.__colors.COLOR_GRAY
+        self.__author_group_size = 50
+        self.__author_group_position = (self.__game_settings.SCREEN_WIDTH * 0.15, self.__game_settings.SCREEN_HEIGHT * 0.1)
+        self.__author_group = Text(self.__author_group_title, self.__author_group_size, self.__author_group_color, self.__author_group_position)
+
+        self.add_element(self.__author_group)
 
 
 class Text:
