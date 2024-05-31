@@ -5,6 +5,7 @@ import random
 
 
 class PlayerModel:
+    """Отвечает за логику игрока."""
     def __init__(self, x_position: int, y_position: int):
         self.__x = x_position
         self.__y = y_position
@@ -86,32 +87,8 @@ class PlayerModel:
                 self.set_target_position(None, None)
 
 
-class PlayerController:
-    def __init__(self, model: PlayerModel):
-        self.model = model
-        self.view = PlayerView(self.model)
-
-    def update(self, scaled_delta_time: float) -> None:
-        self.model.update_physics()
-        self.view.update_animation(scaled_delta_time)
-
-    def handle_events(self, event: pg.event.Event, mouse_position):
-        if self.model.is_alive():
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_t:  # Установить новую цель игрока (к ней он будет бежать)
-                    self.model.set_target_position(mouse_position[0], mouse_position[1])
-                elif event.key == pg.K_s:  # Отменить цель игрока (остановит игрока на месте т.к цели больше нет)
-                    self.model.move_stop()
-                elif event.key == pg.K_p:  # Установить новую позицию для игрока
-                    self.model.set_position(mouse_position[0], mouse_position[1])
-                elif event.key == pg.K_a:  # Выдать игроку случайное кол-во очков (отобразится в UI)
-                    self.model.add_score_random()
-            elif event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    print("Booom !")
-
-
 class PlayerView:
+    """Отвечает за отображение игрока на экране и его анимацию."""
     def __init__(self, model: PlayerModel):
         self.model = model
 
@@ -120,8 +97,8 @@ class PlayerView:
         self.__scale_frames_factor = 2.4
 
         self.__frame_index = 0
-        self.__idle_animation_speed = 0.25
-        self.__move_animation_speed = 0.08
+        self.__idle_animation_speed = 0.41
+        self.__move_animation_speed = 0.14
 
         self.__idle_frames = load_frames("Idle", "Player", self.__idle_frames_quantity, self.__scale_frames_factor)
         self.__move_frames = load_frames("Walk", "Player", self.__move_frames_quantity, self.__scale_frames_factor)
@@ -154,13 +131,39 @@ class PlayerView:
         self.rect = self.image.get_rect(center=self.model.get_position())
 
 
+class PlayerController:
+    """Получает пользовательские события, обновляет модель игрока и представление."""
+    def __init__(self, model: PlayerModel, view: PlayerView):
+        self.model = model
+        self.view = view
+
+    def update(self, scaled_delta_time: float) -> None:
+        self.model.update_physics()
+        self.view.update_animation(scaled_delta_time)
+
+    def handle_events(self, event: pg.event.Event, mouse_position):
+        if self.model.is_alive():
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_t:  # Установить новую цель игрока (к ней он будет бежать)
+                    self.model.set_target_position(mouse_position[0], mouse_position[1])
+                elif event.key == pg.K_s:  # Отменить цель игрока (остановит игрока на месте т.к цели больше нет)
+                    self.model.move_stop()
+                elif event.key == pg.K_p:  # Установить новую позицию для игрока
+                    self.model.set_position(mouse_position[0], mouse_position[1])
+                elif event.key == pg.K_a:  # Выдать игроку случайное кол-во очков (отобразится в UI)
+                    self.model.add_score_random()
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    print("Attack!")
+
+
 class Player(pg.sprite.Sprite):
     def __init__(self, x_position: int, y_position: int) -> None:
         super().__init__()
 
         self.model = PlayerModel(x_position, y_position)
-        self.controller = PlayerController(self.model)
         self.view = PlayerView(self.model)
+        self.controller = PlayerController(self.model, self.view)
 
         self.image = self.view.image
         self.rect = self.image.get_rect()
