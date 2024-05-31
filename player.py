@@ -141,7 +141,7 @@ class PlayerController:
         self.model.update_physics()
         self.view.update_animation(scaled_delta_time)
 
-    def handle_events(self, event: pg.event.Event, mouse_position):
+    def handle_events(self, event: pg.event.Event, mouse_position: tuple[int, int], ghosts_group: pg.sprite.Group, explosions_group: pg.sprite.Group) -> None:
         if self.model.is_alive():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_t:  # Установить новую цель игрока (к ней он будет бежать)
@@ -154,7 +154,10 @@ class PlayerController:
                     self.model.add_score_random()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    print("Attack!")
+                    for ghost in ghosts_group:
+                        if ghost.is_clicked(mouse_position):
+                            ghost.die(explosions_group)
+                            self.model.add_score_random()
 
 
 class Player(pg.sprite.Sprite):
@@ -175,3 +178,15 @@ class Player(pg.sprite.Sprite):
 
         self.image = self.view.image
         self.rect = self.view.rect
+
+    def set_target_position(self, new_target_position_x: int, new_target_position_y: int) -> None:
+        self.model.set_target_position(new_target_position_x, new_target_position_y)
+
+    def handle_events(self, event: pg.event.Event, mouse_position: tuple[int, int], ghosts_group: pg.sprite.Group, explosions_group: pg.sprite.Group) -> None:
+        self.controller.handle_events(event, mouse_position, ghosts_group, explosions_group)
+
+    def is_alive(self) -> bool:
+        return self.model.is_alive()
+
+    def get_score(self) -> int:
+        return self.model.get_score()
