@@ -194,7 +194,7 @@ class UIGamePlay(UI):
 
         self.__score_title = "0000"
         self.__score_color = self.__colors.COLOR_WHITE
-        self.__score_size = 80
+        self.__score_size = 90
         self.__score_position = (self.__game_settings.SCREEN_WIDTH - (self.__game_settings.SCREEN_WIDTH * 0.1), (self.__game_settings.SCREEN_HEIGHT * 0.05))
         self.score = Text(self.__score_title, self.__score_size, self.__score_color, self.__score_position)
 
