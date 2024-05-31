@@ -53,6 +53,9 @@ class PlayerModel:
         self.set_target_position(self.__x, self.__y)
         self.__is_moving = False
 
+    def update_physics(self):
+        self.move_to_target()
+
     def move_to_target(self) -> None:
         if self.__target_x is not None and self.__target_y is not None:
             direction_x = self.__target_x - self.__x
@@ -86,7 +89,7 @@ class PlayerController:
         self.view = PlayerView(self.model)
 
     def update(self, scaled_delta_time: float) -> None:
-        self.model.move_to_target()
+        self.model.update_physics()
         self.view.update_animation(scaled_delta_time)
 
     def handle_events(self, event, mouse_pos):
