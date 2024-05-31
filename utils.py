@@ -16,7 +16,7 @@ class GameSettings:
     GAME_FPS_MAX = 60
     GAME_BASE_FONT = "fonts/thin_pixel-7.ttf"
     GAME_BASE_FONT_SIZE = 40
-    GAME_NAME = "Введите название игры"
+    GAME_NAME = "Курица-волшебник: Побег от пламени"
     GAME_AUTHOR = "Крюков Никита А."
     GAME_AUTHOR_GROUP = "РИ-130915"
 
