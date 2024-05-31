@@ -150,6 +150,10 @@ class GameScene(Scene):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 self.__game.toggle_pause()
+            elif event.key == pg.K_d:
+                self.__player.die(self.__explosions_group)  # Убить игрока
+            elif event.key == pg.K_a:
+                self.__player.add_score_random()  #  Выдать игроку случайное кол-во очков (отобразится в UI)
 
         if not self.__game.is_game_paused():
             self.__player.handle_events(event, mouse_position, self.__ghosts_group, self.__explosions_group)

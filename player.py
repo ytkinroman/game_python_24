@@ -1,5 +1,6 @@
 import pygame as pg
 from utils import load_frames
+from effects import Explosion
 from math import sqrt
 import random
 
@@ -86,6 +87,14 @@ class PlayerModel:
                 self.set_position(self.__target_x, self.__target_y)
                 self.set_target_position(None, None)
 
+    def die(self, explosions_group: pg.sprite.Group) -> None:
+        """Уничтожить сущность."""
+        if self.__is_alive:
+            self.__is_alive = False
+            explosion_position = self.get_position()
+            explosion = Explosion(explosion_position[0], explosion_position[1])
+            explosions_group.add(explosion)
+
 
 class PlayerView:
     """Отвечает за отображение игрока на экране и его анимацию."""
@@ -150,8 +159,6 @@ class PlayerController:
                     self.model.move_stop()
                 elif event.key == pg.K_p:  # Установить новую позицию для игрока
                     self.model.set_position(mouse_position[0], mouse_position[1])
-                elif event.key == pg.K_a:  # Выдать игроку случайное кол-во очков (отобразится в UI)
-                    self.model.add_score_random()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for ghost in ghosts_group:
@@ -190,3 +197,10 @@ class Player(pg.sprite.Sprite):
 
     def get_score(self) -> int:
         return self.model.get_score()
+
+    def add_score_random(self) -> None:
+        self.model.add_score_random()
+
+    def die(self, explosions_group: pg.sprite.Group) -> None:
+        self.model.die(explosions_group)
+        self.kill()
