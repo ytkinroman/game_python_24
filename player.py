@@ -49,6 +49,9 @@ class PlayerModel:
     def is_looking_right(self) -> bool:
         return self.__looking_right
 
+    def is_alive(self) -> bool:
+        return self.__is_alive
+
     def move_stop(self) -> None:
         self.set_target_position(self.__x, self.__y)
         self.__is_moving = False
@@ -92,16 +95,20 @@ class PlayerController:
         self.model.update_physics()
         self.view.update_animation(scaled_delta_time)
 
-    def handle_events(self, event, mouse_pos):
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_t:  # Установить новую цель игрока (к ней он будет бежать)
-                self.model.set_target_position(mouse_pos[0], mouse_pos[1])
-            elif event.key == pg.K_s:  # Отменить цель игрока (остановит игрока на месте т.к цели больше нет)
-                self.model.move_stop()
-            elif event.key == pg.K_p:  # Установить новую позицию для игрока
-                self.model.set_position(mouse_pos[0], mouse_pos[1])
-            elif event.key == pg.K_a:  # Выдать игроку случайное кол-во очков (отобразится в UI)
-                self.model.add_score_random()
+    def handle_events(self, event: pg.event.Event, mouse_position):
+        if self.model.is_alive():
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_t:  # Установить новую цель игрока (к ней он будет бежать)
+                    self.model.set_target_position(mouse_position[0], mouse_position[1])
+                elif event.key == pg.K_s:  # Отменить цель игрока (остановит игрока на месте т.к цели больше нет)
+                    self.model.move_stop()
+                elif event.key == pg.K_p:  # Установить новую позицию для игрока
+                    self.model.set_position(mouse_position[0], mouse_position[1])
+                elif event.key == pg.K_a:  # Выдать игроку случайное кол-во очков (отобразится в UI)
+                    self.model.add_score_random()
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    print("Booom !")
 
 
 class PlayerView:
