@@ -17,12 +17,12 @@ class GameSettings:
     GAME_BASE_FONT = "fonts/thin_pixel-7.ttf"
     GAME_BASE_FONT_SIZE = 40
     GAME_NAME = "Введите название игры"
-    GAME_AUTHOR = "Крюков Никита Андреевич (РИ-130915)"
-    GAME_AUTHOR_NICKNAME = "ytkinroman"
+    GAME_AUTHOR = "Крюков Н.А."
+    GAME_AUTHOR_GROUP = "РИ-130915"
 
     SCREEN_WIDTH, SCREEN_HEIGHT = 1024, 768
     SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-    SCREEN_TITLE = f"| Python | PyGame | {GAME_NAME} | {GAME_AUTHOR} | АТ-04 | {GAME_NAME}"
+    SCREEN_TITLE = f"{GAME_NAME} | {GAME_AUTHOR} {GAME_AUTHOR_GROUP}"
     SCREEN_ICON = "images/screen_game_logo.png"
 
 
