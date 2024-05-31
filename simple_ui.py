@@ -69,7 +69,7 @@ class UIEnding(UI):
 
         self.add_element(self.__text)
 
-        if self.__player.model.is_alive():
+        if self.__player.is_alive():
             self.__description_title = "Волшебник убежал, с ним остался только костюм курицы... (Хорошая концовка)"
         else:
             self.__description_title = "Волшебник, погиб оказавшийся в безвыходном положении... (Плохая концовка)"
@@ -201,7 +201,7 @@ class UIGamePlay(UI):
         self.add_element(self.score)
 
     def update(self, player: Player):
-        self.score.set_text("{:0>4d}".format(player.model.get_score()))
+        self.score.set_text("{:0>4d}".format(player.get_score()))
 
 
 class UIMainMenu(UI):
