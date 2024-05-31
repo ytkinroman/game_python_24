@@ -1,6 +1,7 @@
 import pygame as pg
 from utils import GameSettings, Colors
 from player import Player
+from story import StoryText
 
 
 class UI:
@@ -46,6 +47,133 @@ class UIPause(UI):
         self.__support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
 
         self.add_element(self.__support)
+
+
+class UIEnding(UI):
+    def __init__(self, player: Player) -> None:
+        """Инициализация пользовательского интерфейса финальной сцены."""
+        super().__init__()
+
+        self.__game_settings = GameSettings()
+        self.__colors = Colors()
+        self.__player = player
+
+        self.__background = Background(self.__colors.COLOR_BLACK,(self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT), (0, 0))
+        self.add_element(self.__background)
+
+        self.__text_title = "* Конец истории *"
+        self.__text_color = self.__colors.COLOR_WHITE
+        self.__text_size = 80
+        self.__text_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT // 2)
+        self.__text = Text(self.__text_title, self.__text_size, self.__text_color, self.__text_position)
+
+        self.add_element(self.__text)
+
+        if self.__player.model.is_alive():
+            self.__description_title = "Волшебник убежал, с ним остался только костюм курицы... (Хорошая концовка)"
+        else:
+            self.__description_title = "Волшебник, погиб оказавшийся в безвыходном положении... (Плохая концовка)"
+
+        self.__description_color = self.__colors.COLOR_GRAY
+        self.__description_size = 45
+        self.__description_position = (self.__game_settings.SCREEN_WIDTH // 2, (self.__game_settings.SCREEN_HEIGHT // 2) + (self.__game_settings.SCREEN_HEIGHT * 0.07))  # ОТСТУП СНИЗУ НА 7%
+        self.__description = Text(self.__description_title, self.__description_size, self.__description_color, self.__description_position)
+
+        self.add_element(self.__description)
+
+        self.__support_title = "Чтобы выйти из игры нажмите Esc (Эскейпт)."
+        self.__support_color = self.__colors.COLOR_GRAY
+        self.__support_size = 40
+        self.__support_position = (self.__game_settings.SCREEN_WIDTH // 2, (self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.05)))  # ОТСТУП СНИЗУ НА 5%
+        self.__support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
+
+        self.add_element(self.__support)
+
+        self.__replay_title = "Чтобы поиграть ещё раз нажмите Space (Пробел)."
+        self.__replay_color = self.__colors.COLOR_GRAY
+        self.__replay_size = 40
+        self.__replay_position = (self.__game_settings.SCREEN_WIDTH // 2, (self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.10)))  # ОТСТУП СНИЗУ НА 10%
+        self.__replay = Text(self.__replay_title, self.__replay_size, self.__replay_color, self.__replay_position)
+
+        self.add_element(self.__replay)
+
+
+class UIStory(UI):
+    def __init__(self) -> None:
+        """Инициализация пользовательского интерфейса сцены истории."""
+        super().__init__()
+
+        self.__game_settings = GameSettings()
+        self.__colors = Colors()
+
+        self.__background = Background(self.__colors.COLOR_WHITE,(self.__game_settings.SCREEN_WIDTH, self.__game_settings.SCREEN_HEIGHT),(0, 0))
+        self.add_element(self.__background)
+
+        self.__description_title = "* Режим истории *"
+        self.__description_color = self.__colors.COLOR_GRAY
+        self.__description_size = 60
+        self.__description_position = (self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT * 0.05)
+        self.__description = Text(self.__description_title, self.__description_size, self.__description_color, self.__description_position)
+
+        self.add_element(self.__description)
+
+        self.__support_title = "Чтобы продолжить повествование нажмите Enter..."
+        self.__support_title_ending = "История закончилась. Нажмите Enter, чтобы начать играть."
+        self.__support_color = self.__colors.COLOR_GRAY
+        self.__support_size = 50
+
+        self.__support_x = self.__game_settings.SCREEN_WIDTH // 2
+        self.__support_y = (self.__game_settings.SCREEN_HEIGHT - (self.__game_settings.SCREEN_HEIGHT * 0.05))  # ОТСТУП СНИЗУ НА 5%
+        self.__support_position = (self.__support_x, self.__support_y)
+        self.__support = Text(self.__support_title, self.__support_size, self.__support_color, self.__support_position)
+
+        self.add_element(self.__support)
+
+        self.__story_list = ["Эта история о противостоянии добра и зла.",
+                           "Вы - величайший маг, обитатель мирной деревни \"Гринвич\".",
+                           "Всё случилось во время праздника костюмов...",
+                           "На вашу деревню напал злодей - некому ранее неизвестный колдун.",
+                           "Он призвал духов стихий, чтобы уничтожить ваш любимый дом.",
+                           "В панике вы бросились бежать со всех ног...",
+                           "Оставив позади всех и всё, что у вас было.",
+                           "...",
+                           "Даже не успели снять праздничный костюм...",
+                           "...",
+                           "Всё оказалось не так просто...",
+                           "Кажется, вы попали в засаду..."]
+
+        self.__story_texts = StoryText(self.__story_list)
+
+        self.__story_title = self.__story_texts.get_current_text()
+        self.__story_color = self.__colors.COLOR_BLACK
+        self.__story_size = 55
+        self.__story_x = self.__game_settings.SCREEN_WIDTH // 2
+        self.__story_y = self.__game_settings.SCREEN_HEIGHT // 2
+        self.__story_position = (self.__story_x, self.__story_y)
+        self.__story = Text(self.__story_title, self.__story_size, self.__story_color, self.__story_position)
+
+        self.add_element(self.__story)
+
+    def get_story_current_text(self) -> str:
+        return self.__story_texts.get_current_text()
+
+    def is_next_story_text(self) -> bool:
+        return self.__story_texts.is_next_text()
+
+    def next_story_text(self) -> None:
+        self.__story_texts.next_text()
+
+    def set_story_text(self, text: str) -> None:
+        self.__story.set_text(text)
+
+    def set_ending_support_text(self) -> None:
+        self.__support.set_text(self.__support_title_ending)
+
+    def get_current_index_story(self) -> int:
+        return self.__story_texts.get_current_index()
+
+    def is_last_story(self):
+        return self.__story_texts.get_texts_length() - 1
 
 
 class UIGamePlay(UI):
