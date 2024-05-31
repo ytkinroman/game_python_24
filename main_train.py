@@ -98,11 +98,14 @@ class GameScene(Scene):
         self.__gameplay_pause_ui.draw(screen)
 
     def handle_events(self, event: pg.event.Event) -> None:
-        mouse_pos = pg.mouse.get_pos()
+        mouse_position = pg.mouse.get_pos()
+
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 self.__game.toggle_pause()
-            self.__player.controller.handle_events(event, mouse_pos)
+
+        if not self.__game.is_game_paused():
+            self.__player.controller.handle_events(event, mouse_position)
 
 
 if __name__ == "__main__":

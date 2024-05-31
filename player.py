@@ -172,5 +172,6 @@ class Player(pg.sprite.Sprite):
     def update(self, scaled_delta_time: float) -> None:
         self.controller.update(scaled_delta_time)
         self.view.update_animation(scaled_delta_time)
+
         self.image = self.view.image
         self.rect = self.view.rect
