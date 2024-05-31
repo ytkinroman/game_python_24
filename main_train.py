@@ -5,7 +5,7 @@ from environment import Environment
 from simple_ui import UIPause, UIGamePlay, UIMainMenu, UIStory, UIEnding
 from scene import Scene
 from player import Player
-from ghost import Ghost
+from game_manager import GameManager
 
 
 class Game:
@@ -108,8 +108,7 @@ class GameScene(Scene):
         self.__player = Player(self.__game_settings.SCREEN_WIDTH + 150, self.__game_settings.SCREEN_HEIGHT// 2)
         self.__players_group.add(self.__player)
 
-        self.__ghost = Ghost(200, 200, self.__player)
-        self.__ghosts_group.add(self.__ghost)
+        self.__game_manager = GameManager(self.__player, self.__ghosts_group)
 
         self.__player.set_target_position(self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT // 2)
 
@@ -123,7 +122,10 @@ class GameScene(Scene):
         self.__players_group.update(scaled_delta_time)
         self.__ghosts_group.update(scaled_delta_time)
         self.__explosions_group.update(scaled_delta_time)
+
         self.__gameplay_ui.update(self.__player)
+
+        self.__game_manager.update(scaled_delta_time)
 
         if self.__player.is_alive():
             for ghost in self.__ghosts_group:
@@ -162,12 +164,6 @@ class GameScene(Scene):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 self.__game.toggle_pause()
-            elif event.key == pg.K_d:
-                self.__player.die(self.__explosions_group)  # Убить игрока
-            elif event.key == pg.K_f:
-                self.__ghost.die(self.__explosions_group)  # Убить духа
-            elif event.key == pg.K_a:
-                self.__player.add_score_random()  # Выдать игроку случайное кол-во очков (отобразится в UI)
 
         if not self.__game.is_game_paused():
             self.__player.handle_events(event, mouse_position, self.__ghosts_group, self.__explosions_group)
