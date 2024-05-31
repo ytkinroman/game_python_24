@@ -153,12 +153,13 @@ class PlayerController:
     def handle_events(self, event: pg.event.Event, mouse_position: tuple[int, int], ghosts_group: pg.sprite.Group, explosions_group: pg.sprite.Group) -> None:
         if self.model.is_alive():
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_t:  # Установить новую цель игрока (к ней он будет бежать)
-                    self.model.set_target_position(mouse_position[0], mouse_position[1])
-                elif event.key == pg.K_s:  # Отменить цель игрока (остановит игрока на месте т.к цели больше нет)
-                    self.model.move_stop()
-                elif event.key == pg.K_p:  # Установить новую позицию для игрока
-                    self.model.set_position(mouse_position[0], mouse_position[1])
+                # if event.key == pg.K_t:  # Установить новую цель игрока (к ней он будет бежать)
+                #     self.model.set_target_position(mouse_position[0], mouse_position[1])
+                # elif event.key == pg.K_s:  # Отменить цель игрока (остановит игрока на месте т.к цели больше нет)
+                #     self.model.move_stop()
+                # elif event.key == pg.K_p:  # Установить новую позицию для игрока
+                #     self.model.set_position(mouse_position[0], mouse_position[1])
+                pass
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for ghost in ghosts_group:
@@ -204,3 +205,6 @@ class Player(pg.sprite.Sprite):
     def die(self, explosions_group: pg.sprite.Group) -> None:
         self.model.die(explosions_group)
         self.kill()
+
+    def get_position(self) -> tuple[int, int]:
+        return self.model.get_position()
