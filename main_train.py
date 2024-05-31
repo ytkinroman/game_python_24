@@ -2,7 +2,7 @@ import sys
 import pygame as pg
 from utils import GameSettings, Colors
 from environment import Environment
-from simple_ui import UIPause, UIGamePlay
+from simple_ui import UIPause, UIGamePlay, UIMainMenu, UIStory, UIEnding
 from scene import Scene
 from player import Player
 
@@ -52,6 +52,43 @@ class Game:
         self._scene = scene
 
 
+class MainMenuScene(Scene):
+    def __init__(self, game: Game) -> None:
+        super().__init__()
+        self.__game = game
+        self.__menu_scene_ui = UIMainMenu()
+
+    def render(self, screen: pg.Surface) -> None:
+        self.__menu_scene_ui.draw(screen)
+
+    def handle_events(self, event: pg.event.Event) -> None:
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_SPACE:
+                self.__game.change_scene(StoryScene(self.__game))
+
+
+class StoryScene(Scene):
+    def __init__(self, game: Game) -> None:
+        super().__init__()
+        self.__game = game
+        self.__story_scene_ui = UIStory()
+
+    def render(self, screen: pg.Surface) -> None:
+        self.__story_scene_ui.draw(screen)
+
+    def handle_events(self, event: pg.event.Event) -> None:
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_RETURN:
+                if self.__story_scene_ui.is_next_story_text():
+                    self.__story_scene_ui.next_story_text()
+                    self.__story_scene_ui.set_story_text(self.__story_scene_ui.get_story_current_text())
+
+                    if self.__story_scene_ui.get_current_index_story() == self.__story_scene_ui.is_last_story:
+                        self.__story_scene_ui.set_ending_support_text()
+                else:
+                    self.__game.change_scene(GameScene(self.__game))
+
+
 class GameScene(Scene):
     def __init__(self, game: Game) -> None:
         super().__init__()
@@ -61,12 +98,16 @@ class GameScene(Scene):
 
         self.__environment_group = Environment()
         self.__players_group = pg.sprite.Group()
+        self.__ghosts_group = pg.sprite.Group()
+        self.__explosions_group = pg.sprite.Group()
 
         self.__gameplay_pause_ui = UIPause()
         self.__gameplay_ui = UIGamePlay()
 
-        self.__player = Player(200, 200)
+        self.__player = Player(self.__game_settings.SCREEN_WIDTH + 150, self.__game_settings.SCREEN_HEIGHT// 2)
         self.__players_group.add(self.__player)
+
+        self.__player.set_target_position(self.__game_settings.SCREEN_WIDTH // 2, self.__game_settings.SCREEN_HEIGHT // 2)
 
     def update(self, scaled_delta_time: float) -> None:
         if not self.__game.is_game_paused():
@@ -76,6 +117,8 @@ class GameScene(Scene):
 
     def __update_game_world(self, scaled_delta_time: float) -> None:
         self.__players_group.update(scaled_delta_time)
+        self.__ghosts_group.update(scaled_delta_time)
+        self.__explosions_group.update(scaled_delta_time)
         self.__gameplay_ui.update(self.__player)
 
     def __update_game_pause(self) -> None:
@@ -90,11 +133,15 @@ class GameScene(Scene):
     def __render_game_world(self) -> None:
         self.__environment_group.draw(screen)
         self.__players_group.draw(screen)
+        self.__ghosts_group.draw(screen)
+        self.__explosions_group.draw(screen)
         self.__gameplay_ui.draw(screen)
 
     def __render_game_pause(self) -> None:
         self.__environment_group.draw(screen)
         self.__players_group.draw(screen)
+        self.__ghosts_group.draw(screen)
+        self.__explosions_group.draw(screen)
         self.__gameplay_pause_ui.draw(screen)
 
     def handle_events(self, event: pg.event.Event) -> None:
@@ -105,7 +152,25 @@ class GameScene(Scene):
                 self.__game.toggle_pause()
 
         if not self.__game.is_game_paused():
-            self.__player.controller.handle_events(event, mouse_position)
+            self.__player.handle_events(event, mouse_position, self.__ghosts_group, self.__explosions_group)
+
+
+class EndingScene(Scene):
+    def __init__(self, game: Game, player: Player) -> None:
+        super().__init__()
+        self.__game = game
+        self.__player = player
+        self.__final_scene_ui = UIEnding(self.__player)
+
+    def render(self, screen: pg.Surface) -> None:
+        self.__final_scene_ui.draw(screen)
+
+    def handle_events(self, event: pg.event.Event) -> None:
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_ESCAPE:
+                self.__game.stop()
+            if event.key == pg.K_SPACE:
+                self.__game.change_scene(GameScene(self.__game))
 
 
 if __name__ == "__main__":
