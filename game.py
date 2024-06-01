@@ -1,5 +1,8 @@
 import pygame as pg
-from scene import MainMenuScene, StoryScene, GameScene, EndingScene
+from scene_module.main_menu_scene import MainMenuScene
+from scene_module.story_scene import StoryScene
+from scene_module.game_scene import GameScene
+from scene_module.ending_scene import EndingScene
 
 
 class Game:
