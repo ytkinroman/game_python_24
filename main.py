@@ -10,12 +10,13 @@ if __name__ == "__main__":
     game_settings = GameSettings()
     colors = Colors()
 
+    game = Game(game_settings.GAME_FPS_MAX)
+
     pg.display.set_icon(pg.image.load(game_settings.SCREEN_ICON))
     pg.display.set_caption(game_settings.SCREEN_TITLE)
     screen = pg.display.set_mode(game_settings.SCREEN_SIZE)
 
     clock = pg.time.Clock()
-    game = Game(game_settings.GAME_FPS_MAX)
 
     while game.is_game_running():
         events = pg.event.get()
