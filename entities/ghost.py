@@ -2,11 +2,10 @@ import pygame as pg
 from utils import load_frames
 from math import sqrt
 from effects import Explosion
-from player import Player
 
 
 class GhostModel:
-    def __init__(self, x_position: int, y_position: int, player: Player):
+    def __init__(self, x_position: int, y_position: int, player):
         self.__x = x_position
         self.__y = y_position
 
@@ -125,7 +124,7 @@ class GhostController:
 
 
 class Ghost(pg.sprite.Sprite):
-    def __init__(self, x_position: int, y_position: int, player: Player) -> None:
+    def __init__(self, x_position: int, y_position: int, player) -> None:
         super().__init__()
 
         self.__player = player
