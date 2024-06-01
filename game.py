@@ -1,10 +1,10 @@
 import pygame as pg
-from scene import Scene
+from scene import MainMenuScene, StoryScene, GameScene, EndingScene
 
 
 class Game:
     def __init__(self, fps: int) -> None:
-        self.__running = True
+        self._running = True
         self._paused = False
 
         self._fps = fps
@@ -23,31 +23,31 @@ class Game:
         """Переключение состояния паузы."""
         self._paused = not self._paused
 
-    def stop(self) -> None:
-        """Останавливает игру."""
-        self.__running = False
-
     def is_game_paused(self) -> bool:
         """Возвращает True, если игра находится в состоянии паузы."""
         return self._paused
 
+    def stop(self) -> None:
+        """Останавливает игру."""
+        self._running = False
+
     def is_game_running(self) -> bool:
         """Возвращает True, если игра запущена."""
-        return self.__running
+        return self._running
 
     def update(self) -> None:
-        """Обновляет игру каждый кадр."""
+        """Обновляет сцену каждый кадр."""
         scaled_delta_time = self._delta_time * self._game_speed
-        self._scene.update(scaled_delta_time)
+        self._current_scene.update(scaled_delta_time)
 
     def render(self, screen: pg.Surface) -> None:
         """Отображение графики сцены на экране."""
-        self._scene.render(screen)
+        self._current_scene.render(screen)
 
     def handle_events(self, event: pg.event.Event) -> None:
-        """Обработка событий, которые происходят в сцене."""
-        self._scene.handle_events(event)
+        """Обработка событий, которые происходят на сцене."""
+        self._current_scene.handle_events(event)
 
-    def change_scene(self, scene: Scene) -> None:
-        """Сменить текущую сцену."""
-        self._scene = scene
+    def change_scene(self, scene_name: str) -> None:
+        """Сменить сцену."""
+        self._current_scene = self._scenes[scene_name]
