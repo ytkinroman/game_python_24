@@ -35,3 +35,4 @@ class Colors:
     COLOR_BLACK = (0, 0, 0)
     COLOR_WHITE = (255, 255, 255)
     COLOR_GRAY = (192, 192, 192)
+    COLOR_ORANGE = (239, 130, 13)

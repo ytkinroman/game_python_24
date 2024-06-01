@@ -17,7 +17,7 @@ class UIMainMenu(UI):
         self.add_element(self.__welcome)
 
         self.__name_title = '"' + self._game_settings.GAME_NAME + '"'
-        self.__name_color = self._colors.COLOR_GREEN
+        self.__name_color = self._colors.COLOR_ORANGE
         self.__name_size = 90
         self.__name_position = (self._game_settings.SCREEN_WIDTH // 2, self._game_settings.SCREEN_HEIGHT // 2)
         self.__name = Text(self.__name_title, self.__name_size, self.__name_color, self.__name_position)
