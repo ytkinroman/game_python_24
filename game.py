@@ -1,7 +1,8 @@
 import pygame as pg
 from scene_module.main_menu_scene import MainMenuScene
-#from scene_module.story_scene import StoryScene
-#from scene_module.game_scene import GameScene
+from scene_module.story_scene import StoryScene
+from scene_module.game_scene import GameScene
+from scene_module.ending_scene import EndingScene
 
 
 class Game:
@@ -15,17 +16,23 @@ class Game:
         self._running = True
         self._paused = False
 
+        self._good_ending = False
+
         self._scenes = {
             "main_menu": MainMenuScene(self),
-            #"story": StoryScene(self),
-            #"game": GameScene(self),
-            # "ending": EndingScene(self)
+            "story": StoryScene(self),
+            "game": GameScene(self),
+            "end": EndingScene(self)
         }
-        self._current_scene = self._scenes["main_menu"]
+        self._current_scene = self._scenes["game"]
 
     def toggle_pause(self) -> None:
         """Переключение состояния паузы."""
         self._paused = not self._paused
+
+    def toggle_ending(self) -> None:
+        """Переключает состояние концовки."""
+        self._good_ending = not self._good_ending
 
     def is_game_paused(self) -> bool:
         """Возвращает True, если игра находится в состоянии паузы."""
@@ -38,6 +45,10 @@ class Game:
     def is_game_running(self) -> bool:
         """Возвращает True, если игра запущена."""
         return self._running
+
+    def is_good_ending(self) -> bool:
+        """Возвращает True, если получена хорошая концовка."""
+        return self._good_ending
 
     def update(self) -> None:
         """Обновляет сцену каждый кадр."""
