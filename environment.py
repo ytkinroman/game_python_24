@@ -1,9 +1,9 @@
-import os
 import pygame as pg
+import os
 
 
 class BackgroundSprite(pg.sprite.Sprite):
-    def __init__(self, image_path):
+    def __init__(self, image_path: str) -> None:
         super().__init__()
         self.image = pg.image.load(image_path).convert()
         self.rect = self.image.get_rect()
@@ -81,8 +81,8 @@ class Environment(pg.sprite.Group):
     def __init__(self):
         super().__init__()
 
-        self.__background = BackgroundSprite(os.path.join("images", "game_background.png"))
-        self.add(self.__background)
+        self._background = BackgroundSprite(os.path.join("images", "game_background.png"))
+        self.add(self._background)
 
         decorations = (
             MushroomPurple(900, 300),

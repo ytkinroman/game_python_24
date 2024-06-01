@@ -1,6 +1,7 @@
 import random
 import pygame as pg
-from entities import Player, Ghost
+from entities.ghost import Ghost
+from entities.player import Player
 
 
 class Point:
@@ -29,15 +30,14 @@ class Spawner:
 
     def get_random_point(self) -> tuple[int, int]:
         """Возвращает координаты случайной точки из спавнера."""
-        random_point = random.choice(self.__points)
-        return random_point.get_position()
+        return random.choice(self.__points).get_position()
 
 
 class GhostSpawner(Spawner):
     def __init__(self, spawn_interval: float, spawn_group: pg.sprite.Group, player: Player) -> None:
         super().__init__()
         self.__spawn_interval = spawn_interval
-        self.__group = spawn_group
+        self.__ghost_group = spawn_group
         self.__player = player
 
         self.__spawn_interval_controller = SpawnIntervalController(self)
@@ -67,7 +67,7 @@ class GhostSpawner(Spawner):
         """Спавнер Духов."""
         random_point_position_x, random_point_position_y = self.get_random_point()
         ghost = Ghost(random_point_position_x, random_point_position_y, self.__player)
-        self.__group.add(ghost)
+        self.__ghost_group.add(ghost)
 
     def get_spawn_interval(self) -> float:
         """Возвращает текущий интервал спавна."""
