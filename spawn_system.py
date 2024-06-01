@@ -1,7 +1,7 @@
 import random
 import pygame as pg
-from ghost import Ghost
-from player import Player
+from entities.ghost import Ghost
+from entities.player import Player
 
 
 class Point:
