@@ -6,6 +6,7 @@ from ui_module.gameplay_ui import UIGamePlay
 from environment import Environment
 from entities.player import Player
 from spawn_system import GhostSpawner
+from game_manager import GameManager
 
 
 class GameScene(Scene):
@@ -34,13 +35,10 @@ class GameScene(Scene):
             (self._game_settings.SCREEN_WIDTH // 2, self._game_settings.SCREEN_HEIGHT)
         ]
         self._ghosts_spawner_interval = 1.4
-        self._next_scene_delay = 4
         self._ghosts_spawner = GhostSpawner(self._ghosts_spawner_interval, self._ghosts_group, self._player)
         self._ghosts_spawner.add_points(self._spawn_points_list)
 
-        self._player.set_target_position(self._game_settings.SCREEN_WIDTH // 2, self._game_settings.SCREEN_HEIGHT // 2)
-
-        self._ghosts_spawner.set_active()
+        self._game_manager = GameManager(self._game,  self._ghosts_group, self._player, self._ghosts_spawner)
 
     def update(self, scaled_delta_time: float) -> None:
         if not self._game.is_game_paused():
@@ -52,6 +50,7 @@ class GameScene(Scene):
         self._players_group.update(scaled_delta_time)
         self._ghosts_group.update(scaled_delta_time)
         self._explosions_group.update(scaled_delta_time)
+        self._game_manager.update(scaled_delta_time)
         self._gameplay_ui.update()
 
         if self._player.is_alive():
@@ -91,18 +90,9 @@ class GameScene(Scene):
     def handle_events(self, event: pg.event.Event) -> None:
         if self._player.is_alive():
             mouse_position = pg.mouse.get_pos()
-            self._player.handle_events(event, mouse_position, self._ghosts_group, self._explosions_group)
 
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self._game.toggle_pause()
-                elif event.key == pg.K_a:
-                    self._player.add_score_random()
-                elif event.key == pg.K_t:
-                    self._player.set_target_position(mouse_position[0], mouse_position[1])
-                elif event.key == pg.K_n:
-                    # self._game.toggle_ending()
-                    print(self._game.is_good_ending())
-                    self._game.change_scene("end")
 
-
+            self._player.handle_events(event, mouse_position, self._ghosts_group, self._explosions_group)
