@@ -44,22 +44,18 @@ class GhostSpawner(Spawner):
 
         self.__is_active = False
 
-        self.__start_delay_timer = 6
         self.__last_spawn_time = 0
 
     def update(self, scaled_delta_time: float) -> None:
         """Обновляет состояние спавнера."""
         if self.__is_active:
             if self.__player.is_alive():
-                if self.__start_delay_timer > 0:
-                    self.__start_delay_timer -= scaled_delta_time
-                    return
-
-                self.__last_spawn_time += scaled_delta_time
 
                 if self.__last_spawn_time >= self.__spawn_interval:
                     self.__last_spawn_time = 0
                     self.__spawn_ghost()
+
+                self.__last_spawn_time += scaled_delta_time
 
         self.__spawn_interval_controller.update(self.__player.get_score())
 
