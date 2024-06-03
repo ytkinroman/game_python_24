@@ -16,8 +16,6 @@ class Game:
         self._running = True
         self._paused = False
 
-        self._good_ending = False
-
         self._scenes = {
             "main_menu": MainMenuScene(self),
             "story": StoryScene(self),
@@ -30,10 +28,6 @@ class Game:
         """Переключение состояния паузы."""
         self._paused = not self._paused
 
-    def toggle_ending(self) -> None:
-        """Переключает состояние концовки."""
-        self._good_ending = not self._good_ending
-
     def is_game_paused(self) -> bool:
         """Возвращает True, если игра находится в состоянии паузы."""
         return self._paused
@@ -45,10 +39,6 @@ class Game:
     def is_game_running(self) -> bool:
         """Возвращает True, если игра запущена."""
         return self._running
-
-    def is_good_ending(self) -> bool:
-        """Возвращает True, если получена хорошая концовка."""
-        return self._good_ending
 
     def update(self) -> None:
         """Обновляет сцену каждый кадр."""
