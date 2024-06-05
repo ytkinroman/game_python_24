@@ -20,7 +20,7 @@ class UIEnding(UI):
         self.add_element(self.__text)
 
         if self._ending_good:
-            self.__description_title = "Волшебник убежал, с ним остался только костюм курицы... (Хорошая концовка)"
+            self.__description_title = "Волшебник убежал, с ним остался костюм курицы... (Хорошая концовка)"
             self.__description_color = self._colors.COLOR_GREEN
         else:
             self.__description_title = "Волшебник, погиб оказавшийся в безвыходном положении... (Плохая концовка)"

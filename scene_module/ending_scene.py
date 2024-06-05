@@ -8,16 +8,15 @@ class EndingScene(Scene):
         super().__init__(game)
         self._game = game
         self._ending_good = None
-        self._final_scene_ui = UIEnding(self._game, self._ending_good)
+        self._final_scene_ui = None
 
     def set_good_ending(self):
         self._ending_good = True
+        self._final_scene_ui = UIEnding(self._game, self._ending_good)
 
     def set_bad_ending(self):
         self._ending_good = False
-
-    def reset(self) -> None:
-        self._ending_good = None
+        self._final_scene_ui = UIEnding(self._game, self._ending_good)
 
     def render(self, screen: pg.Surface) -> None:
         self._final_scene_ui.draw(screen)
