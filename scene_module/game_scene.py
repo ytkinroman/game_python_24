@@ -6,7 +6,6 @@ from ui_module.gameplay_ui import UIGamePlay
 from environment import Environment
 from entities.player import Player
 from spawn_system import GhostSpawner
-from game_manager import GameManager
 
 
 class GameScene(Scene):
@@ -14,6 +13,8 @@ class GameScene(Scene):
         super().__init__(game)
 
         self._game_settings = GameSettings
+
+        self._next_scene_delay = 3
 
         self._environment_group = Environment()
         self._players_group = pg.sprite.Group()
@@ -34,11 +35,12 @@ class GameScene(Scene):
             (0, self._game_settings.SCREEN_HEIGHT), (self._game_settings.SCREEN_HEIGHT, 0),
             (self._game_settings.SCREEN_WIDTH // 2, self._game_settings.SCREEN_HEIGHT)
         ]
-        self._ghosts_spawner_interval = 1.4
+        self._ghosts_spawner_interval = 2.0
         self._ghosts_spawner = GhostSpawner(self._ghosts_spawner_interval, self._ghosts_group, self._player)
         self._ghosts_spawner.add_points(self._spawn_points_list)
 
-        self._game_manager = GameManager(self._game,  self._ghosts_group, self._player, self._ghosts_spawner)
+        self._player.set_target_position(self._game_settings.SCREEN_WIDTH // 2, self._game_settings.SCREEN_HEIGHT // 2)
+        self._ghosts_spawner.set_active()
 
     def update(self, scaled_delta_time: float) -> None:
         if not self._game.is_game_paused():
@@ -50,11 +52,23 @@ class GameScene(Scene):
         self._players_group.update(scaled_delta_time)
         self._ghosts_group.update(scaled_delta_time)
         self._explosions_group.update(scaled_delta_time)
-        self._game_manager.update(scaled_delta_time)
         self._gameplay_ui.update()
+        self._ghosts_spawner.update(scaled_delta_time)
 
         if self._player.is_alive():
-            self._ghosts_spawner.update(scaled_delta_time)
+            if self._player.get_score() >= 800:
+                self._ghosts_spawner.stop_active()
+
+                if not self._ghosts_group.sprites():
+
+                    self._player.set_target_position(-150, self._game_settings.SCREEN_HEIGHT // 2)
+
+                    if self._next_scene_delay > 0:
+                        self._next_scene_delay -= scaled_delta_time
+                        return
+
+                    self._game.set_good_ending()
+                    self._game.change_scene("end")
 
             for ghost in self._ghosts_group:
                 if ghost.is_collide_with_player():
@@ -63,6 +77,13 @@ class GameScene(Scene):
             self._ghosts_spawner.stop_active()
             for ghost in self._ghosts_group:
                 ghost.move_stop()
+
+            if self._next_scene_delay > 0:
+                self._next_scene_delay -= scaled_delta_time
+                return
+
+            self._game.set_bad_ending()
+            self._game.change_scene("end")
 
     def _update_game_pause(self) -> None:
         pass
@@ -89,10 +110,9 @@ class GameScene(Scene):
 
     def handle_events(self, event: pg.event.Event) -> None:
         if self._player.is_alive():
-            mouse_position = pg.mouse.get_pos()
-
+            if not self._game.is_game_paused():
+                mouse_position = pg.mouse.get_pos()
+                self._player.handle_events(event, mouse_position, self._ghosts_group, self._explosions_group)
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self._game.toggle_pause()
-
-            self._player.handle_events(event, mouse_position, self._ghosts_group, self._explosions_group)
