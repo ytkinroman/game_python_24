@@ -16,13 +16,13 @@ class Game:
         self._running = True
         self._paused = False
 
-        self._scenes = {
+        self.scenes = {
             "main_menu": MainMenuScene(self),
             "story": StoryScene(self),
             "game": GameScene(self),
             "end": EndingScene(self)
         }
-        self._current_scene = self._scenes["game"]
+        self._current_scene = self.scenes["game"]
 
     def toggle_pause(self) -> None:
         """Переключение состояния паузы."""
@@ -55,4 +55,12 @@ class Game:
 
     def change_scene(self, scene_name: str) -> None:
         """Сменить сцену."""
-        self._current_scene = self._scenes[scene_name]
+        self._current_scene = self.scenes[scene_name]
+
+    def set_bad_ending(self):
+        """Устанавливает плохую концовку."""
+        self.scenes["end"].set_bad_ending()
+
+    def set_good_ending(self):
+        """Устанавливает хорошую концовку."""
+        self.scenes["end"].set_good_ending()
