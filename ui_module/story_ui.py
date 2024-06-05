@@ -1,5 +1,6 @@
 from ui_module.ui import UI, Text, Background
 from story import StoryText
+import pygame as pg
 
 
 class UIStory(UI):
@@ -48,23 +49,17 @@ class UIStory(UI):
         self.__story_x = self._game_settings.SCREEN_WIDTH // 2
         self.__story_y = self._game_settings.SCREEN_HEIGHT // 2
         self.__story_position = (self.__story_x, self.__story_y)
-
         self.__story = Text(self.__story_title, self.__story_size, self.__story_color, self.__story_position)
-
         self.add_element(self.__story)
 
-    def is_next_story_text(self) -> bool:
-        return self.__story_texts.is_next_text()
+    def handle_events(self, event: pg.event.Event) -> None:
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_RETURN:
+                if self.__story_texts.is_next_text():
+                    self.__story_texts.next_text()
+                    self.__story.set_text(self.__story_texts.get_current_text())
 
-    def is_last_story_text(self) -> int:
-        return self.__story_texts.get_texts_length() - 2
-
-    def next_story_text(self) -> None:
-        if self.__story_texts.is_next_text():
-            self.__story_texts.next_text()
-            self.__story.set_text(self.__story_texts.get_current_text())
-
-            if self.__story_texts.get_current_index() == self.__story_texts.get_texts_length() - 1:
-                self.__support.set_text(self.__support_title_ending)
-        else:
-             self._game.change_scene("game")
+                    if self.__story_texts.get_current_index() == self.__story_texts.get_texts_length() - 1:
+                        self.__support.set_text(self.__support_title_ending)
+                else:
+                    self._game.change_scene("game")

@@ -8,10 +8,8 @@ class StoryScene(Scene):
         super().__init__(game)
         self._story_scene_ui = UIStory(self._game)
 
-    def handle_events(self, event: pg.event.Event) -> None:
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_RETURN:
-                self._story_scene_ui.next_story_text()
-
     def render(self, screen: pg.Surface) -> None:
         self._story_scene_ui.draw(screen)
+
+    def handle_events(self, event: pg.event.Event) -> None:
+        self._story_scene_ui.handle_events(event)
