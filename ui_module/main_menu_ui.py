@@ -23,7 +23,7 @@ class UIMainMenu(UI):
         self.__name = Text(self.__name_title, self.__name_size, self.__name_color, self.__name_position)
         self.add_element(self.__name)
 
-        self.__support_title = "Чтобы начать игру нажмите Space (Пробел)."
+        self.__support_title = "Чтобы начать игру нажмите любую клавишу на клавиатуре."
         self.__support_color = self._colors.COLOR_GRAY
         self.__support_size = 50
         self.__support_position = (self._game_settings.SCREEN_WIDTH // 2, self._game_settings.SCREEN_HEIGHT - (self._game_settings.SCREEN_HEIGHT * 0.07))
