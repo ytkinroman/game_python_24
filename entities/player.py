@@ -45,6 +45,9 @@ class PlayerModel:
             self.__target_x = new_target_position_x
             self.__target_y = new_target_position_y
 
+    def get_target_position(self) -> tuple[int, int]:
+        return self.__target_x, self.__target_y
+
     def is_moving(self) -> bool:
         return self.__is_moving
 
@@ -196,6 +199,9 @@ class Player(pg.sprite.Sprite):
     def is_alive(self) -> bool:
         return self.model.is_alive()
 
+    def is_moving(self) -> bool:
+        return self.model.is_moving()
+
     def get_score(self) -> int:
         return self.model.get_score()
 
@@ -208,3 +214,6 @@ class Player(pg.sprite.Sprite):
 
     def get_position(self) -> tuple[int, int]:
         return self.model.get_position()
+
+    def get_target_position(self) -> tuple[int, int]:
+        return self.model.get_target_position()
