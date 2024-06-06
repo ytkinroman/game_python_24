@@ -22,7 +22,7 @@ class Game:
             "game": GameScene(self),
             "end": EndingScene(self)
         }
-        self._current_scene = self.scenes["game"]
+        self._current_scene = self.scenes["main_menu"]
 
     def toggle_pause(self) -> None:
         """Переключение состояния паузы."""
