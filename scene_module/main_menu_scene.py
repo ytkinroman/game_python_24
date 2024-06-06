@@ -13,5 +13,4 @@ class MainMenuScene(Scene):
 
     def handle_events(self, event: pg.event.Event) -> None:
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_SPACE:
-                self._game.change_scene("story")
+            self._game.change_scene("story")
