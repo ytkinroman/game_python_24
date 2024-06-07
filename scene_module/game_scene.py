@@ -14,6 +14,8 @@ class GameScene(Scene):
 
         self._game_settings = GameSettings
 
+        self._game_win_score = 800
+
         self._next_scene_delay = 3
 
         self._environment_group = Environment()
@@ -24,7 +26,7 @@ class GameScene(Scene):
         self._player = Player(self._game_settings.SCREEN_WIDTH + 150, self._game_settings.SCREEN_HEIGHT // 2)
         self._players_group.add(self._player)
 
-        self._pause_ui = UIPause()
+        self._pause_ui = UIPause(self._player, self)
         self._gameplay_ui = UIGamePlay(self._player)
 
         self._spawn_points_list = [
@@ -48,6 +50,9 @@ class GameScene(Scene):
         else:
             self._update_game_pause()
 
+    def get_win_score(self) -> int:
+        return self._game_win_score
+
     def _update_game_world(self, scaled_delta_time: float) -> None:
         self._players_group.update(scaled_delta_time)
         self._ghosts_group.update(scaled_delta_time)
@@ -56,7 +61,7 @@ class GameScene(Scene):
         self._ghosts_spawner.update(scaled_delta_time)
 
         if self._player.is_alive():
-            if self._player.get_score() >= 800:
+            if self._player.get_score() >= self._game_win_score:
                 self._ghosts_spawner.stop_active()
 
                 if not self._ghosts_group.sprites():
@@ -86,7 +91,7 @@ class GameScene(Scene):
             self._game.change_scene("end")
 
     def _update_game_pause(self) -> None:
-        pass
+        self._pause_ui.update()
 
     def render(self, screen: pg.Surface) -> None:
         if not self._game.is_game_paused():
