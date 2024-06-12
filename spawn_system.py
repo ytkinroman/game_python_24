@@ -53,7 +53,6 @@ class GhostSpawner(Spawner):
 
     def update(self, scaled_delta_time: float) -> None:
         if self.__is_active:
-            print(self.__spawn_interval)
             if self.__player.is_alive():
                 if self.__start_delay > 0:
                     self.__start_delay -= scaled_delta_time
