@@ -51,7 +51,7 @@ class UIEnding(UI):
         self.__replay_size = 40
         self.__replay_position = (self._game_settings.SCREEN_WIDTH // 2, (self._game_settings.SCREEN_HEIGHT - (self._game_settings.SCREEN_HEIGHT * 0.10)))
         self.__replay = Text(self.__replay_title, self.__replay_size, self.__replay_color, self.__replay_position)
-        # self.add_element(self.__replay)
+        self.add_element(self.__replay)
 
     def handle_events(self, event: pg.event.Event) -> None:
         if event.type == pg.KEYDOWN:

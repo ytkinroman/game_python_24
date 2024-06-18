@@ -66,4 +66,10 @@ class Game:
         self.scenes["end"].set_good_ending()
 
     def set_result_score(self, score):
+        """Устанавливает результат игры в финальной сцене игры."""
         self.scenes["end"].set_score(score)
+
+    def new_game(self):
+        """Создать новую игровую сцену и перейти на неё."""
+        self.scenes["game"] = GameScene(self)
+        self._current_scene = self.scenes["game"]
