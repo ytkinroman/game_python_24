@@ -64,3 +64,6 @@ class Game:
     def set_good_ending(self):
         """Устанавливает хорошую концовку."""
         self.scenes["end"].set_good_ending()
+
+    def set_result_score(self, score):
+        self.scenes["end"].set_score(score)
