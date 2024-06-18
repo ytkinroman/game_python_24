@@ -72,6 +72,7 @@ class GameScene(Scene):
                         self._next_scene_delay -= scaled_delta_time
                         return
 
+                    self._game.set_result_score(self._player.get_score())
                     self._game.set_good_ending()
                     self._game.change_scene("end")
 
@@ -87,6 +88,7 @@ class GameScene(Scene):
                 self._next_scene_delay -= scaled_delta_time
                 return
 
+            self._game.set_result_score(self._player.get_score())
             self._game.set_bad_ending()
             self._game.change_scene("end")
 
