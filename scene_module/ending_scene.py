@@ -9,21 +9,21 @@ class EndingScene(Scene):
         self._game = game
         self._ending_good = None
         self._final_scene_ui = None
+        self._score = 0
 
     def set_good_ending(self):
         self._ending_good = True
-        self._final_scene_ui = UIEnding(self._game, self._ending_good)
+        self._final_scene_ui = UIEnding(self._game, self._ending_good, self._score)
 
     def set_bad_ending(self):
         self._ending_good = False
-        self._final_scene_ui = UIEnding(self._game, self._ending_good)
+        self._final_scene_ui = UIEnding(self._game, self._ending_good, self._score)
+
+    def set_score(self, score):
+        self._score = score
 
     def render(self, screen: pg.Surface) -> None:
         self._final_scene_ui.draw(screen)
 
     def handle_events(self, event: pg.event.Event) -> None:
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_ESCAPE:
-                self._game.stop()
-            elif event.key == pg.K_SPACE:
-                self._game.new_game()
+        self._final_scene_ui.handle_events(event)

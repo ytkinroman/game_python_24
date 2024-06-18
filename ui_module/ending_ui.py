@@ -3,11 +3,12 @@ import pygame as pg
 
 
 class UIEnding(UI):
-    def __init__(self, game, ending_good) -> None:
+    def __init__(self, game, ending_good, score) -> None:
         super().__init__()
 
         self._game = game
         self._ending_good = ending_good
+        self._score = score
 
         self._background = Background(self._colors.COLOR_BLACK, (self._game_settings.SCREEN_WIDTH, self._game_settings.SCREEN_HEIGHT))
         self.add_element(self._background)
@@ -31,6 +32,13 @@ class UIEnding(UI):
         self.__description = Text(self.__description_title, self.__description_size, self.__description_color, self.__description_position)
         self.add_element(self.__description)
 
+        self.__score_title = str(self._score)
+        self.__score_color = self._colors.COLOR_WHITE
+        self.__score_size = 80
+        self.__score_position = (self._game_settings.SCREEN_WIDTH // 2, (self._game_settings.SCREEN_HEIGHT * 0.05))
+        self.__score = Text(self.__score_title, self.__score_size, self.__score_color,self.__score_position)
+        self.add_element(self.__score)
+
         self.__support_title = "Чтобы выйти из игры нажмите Esc (Эскейпт)."
         self.__support_color = self._colors.COLOR_GRAY
         self.__support_size = 40
@@ -51,5 +59,4 @@ class UIEnding(UI):
                 if event.key == pg.K_ESCAPE:
                     self._game.stop()
                 elif event.key == pg.K_SPACE:
-                    # self._game.new_game()
-                    pass
+                    self._game.new_game()
