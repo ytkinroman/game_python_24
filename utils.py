@@ -36,3 +36,10 @@ class Colors:
     COLOR_WHITE = (255, 255, 255)
     COLOR_GRAY = (192, 192, 192)
     COLOR_ORANGE = (239, 130, 13)
+
+
+class SoundsList:
+    """Класс для хранения звуков и музыки."""
+    GAMEPLAY_MUSIC = "sounds/gameplay_music.mp3"
+    STORY_MUSIC = "sounds/story_music.mp3"
+    EXPLOSION_SOUND = "sounds/explosion_sound.mp3"
