@@ -1,17 +1,20 @@
 import os
 import pygame as pg
+from sound_module.audio_manager import AudioManager
 
 
 class Explosion(pg.sprite.Sprite):
     def __init__(self, x_position: int, y_position: int) -> None:
         super().__init__()
 
+        self.sound = AudioManager()
+        self.explosion_volume = 0.2
+
         self.image_path = os.path.join("images", "Explosions")
-        self.sound_path = os.path.join("sounds", "explosion-1.mp3")
+
         self.scale_factor_frame = 3.2
         self.animation_frames_amount = 13
         self.explosion_duration = 0.8
-        self.explosion_volume = 0.2
 
         self.x, self.y = x_position, y_position
 
@@ -22,10 +25,7 @@ class Explosion(pg.sprite.Sprite):
             self.animation_frames.append(frame)
 
         self.frame_duration = self.explosion_duration / len(self.animation_frames)
-
-        self.explosion_sound = pg.mixer.Sound(self.sound_path)
-        self.explosion_sound.set_volume(self.explosion_volume)
-        self.explosion_sound.play()
+        self.sound.play_explosion_sound(self.explosion_volume)
 
         self.image = self.animation_frames[0]
         self.rect = self.image.get_rect()
