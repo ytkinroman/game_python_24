@@ -7,8 +7,9 @@ class AudioManager:
         self.__music = SoundsList()
         pg.mixer.init()
 
-    def play_background_music(self) -> None:
+    def play_background_music(self, volume: float) -> None:
         pg.mixer.music.load(self.__music.GAMEPLAY_MUSIC)
+        pg.mixer.music.set_volume(volume)
         pg.mixer.music.play(-1)
 
     def play_explosion_sound(self, volume: float) -> None:
