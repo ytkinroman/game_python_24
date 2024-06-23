@@ -40,6 +40,6 @@ class Colors:
 
 class SoundsList:
     """Класс для хранения звуков и музыки."""
-    GAMEPLAY_MUSIC = "sounds/gameplay_music.mp3"
+    GAMEPLAY_MUSIC = "sounds/gameplay_music.ogg"
     STORY_MUSIC = "sounds/story_music.mp3"
     EXPLOSION_SOUND = "sounds/explosion_sound.mp3"
