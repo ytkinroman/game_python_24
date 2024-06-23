@@ -6,6 +6,7 @@ from ui_module.gameplay_ui import UIGamePlay
 from environment import Environment
 from entities.player import Player
 from spawn_system import GhostSpawner
+from sound_module.audio_manager import AudioManager
 
 
 class GameScene(Scene):
@@ -17,6 +18,10 @@ class GameScene(Scene):
         self._game_win_score = 800
 
         self._next_scene_delay = 3
+
+        self._music = AudioManager()
+        self._music_volume = 0.2
+        self._music.play_background_music(self._music_volume)
 
         self._environment_group = Environment()
         self._players_group = pg.sprite.Group()
