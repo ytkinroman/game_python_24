@@ -8,7 +8,7 @@ class Explosion(pg.sprite.Sprite):
         super().__init__()
 
         self.sound = AudioManager()
-        self.explosion_volume = 0.2
+        self.explosion_volume = 0.5
 
         self.image_path = os.path.join("images", "Explosions")
 
