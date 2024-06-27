@@ -5,7 +5,7 @@ from ui_module.pause_ui import UIPause
 from ui_module.gameplay_ui import UIGamePlay
 from environment import Environment
 from entities.player import Player
-from spawn_system import GhostSpawner
+from spawn_system_module.spawn_system import GhostSpawner
 from sound_module.audio_manager import AudioManager
 
 
@@ -14,13 +14,12 @@ class GameScene(Scene):
         super().__init__(game)
 
         self._game_settings = GameSettings
+        self._music = AudioManager()
 
         self._game_win_score = 800
-
         self._next_scene_delay = 3
-
-        self._music = AudioManager()
         self._music_volume = 0.2
+
         self._music.play_background_music(self._music_volume)
 
         self._environment_group = Environment()
@@ -42,8 +41,7 @@ class GameScene(Scene):
             (0, self._game_settings.SCREEN_HEIGHT), (self._game_settings.SCREEN_HEIGHT, 0),
             (self._game_settings.SCREEN_WIDTH // 2, self._game_settings.SCREEN_HEIGHT)
         ]
-        self._ghosts_spawner_interval = 2.0
-        self._ghosts_spawner = GhostSpawner(self._ghosts_spawner_interval, self._ghosts_group, self._player)
+        self._ghosts_spawner = GhostSpawner(self._ghosts_group, self._player)
         self._ghosts_spawner.add_points(self._spawn_points_list)
 
         self._player.set_target_position(self._game_settings.SCREEN_WIDTH // 2, self._game_settings.SCREEN_HEIGHT // 2)

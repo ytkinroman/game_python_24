@@ -5,13 +5,12 @@ from spawn_system_module.spawner import Spawner
 
 
 class GhostSpawner(Spawner):
-    def __init__(self, spawn_interval: float, spawn_group: pg.sprite.Group, player: Player) -> None:
+    def __init__(self, spawn_group: pg.sprite.Group, player: Player) -> None:
         super().__init__()
-        self.__spawn_interval = spawn_interval
         self.__ghost_group = spawn_group
         self.__player = player
 
-        self.__base_spawn_interval = self.__spawn_interval
+        self.__base_spawn_interval = 1.9
         self.__score_increment = 50
         self.__spawn_interval_decrement = 0.2
 
